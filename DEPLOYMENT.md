@@ -28,9 +28,9 @@ Recommended values:
 - `APP_ENV=production`
 - `APP_DEBUG=false`
 - `DB_CONNECTION=pgsql`
-- `SESSION_DRIVER=database`
-- `CACHE_STORE=database`
-- `QUEUE_CONNECTION=database`
+- `SESSION_DRIVER=file`
+- `CACHE_STORE=file`
+- `QUEUE_CONNECTION=sync`
 - `SESSION_SECURE_COOKIE=true`
 
 ## First-time database setup
@@ -62,11 +62,13 @@ Minimum database-backed tables required by the current app:
 - `failed_jobs`
 - all LTCMS business tables from the domain migrations
 
-The project now includes a dedicated migration for the `sessions` table, which is required because the app uses:
+For the current Render deployment, the recommended stable setup is:
 
-- `SESSION_DRIVER=database`
-- `CACHE_STORE=database`
-- `QUEUE_CONNECTION=database`
+- `SESSION_DRIVER=file`
+- `CACHE_STORE=file`
+- `QUEUE_CONNECTION=sync`
+
+This reduces startup and session persistence issues while the system is being stabilized on a single web instance.
 
 ## Example production database variables
 
