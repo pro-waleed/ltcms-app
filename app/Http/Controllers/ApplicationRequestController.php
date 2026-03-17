@@ -41,7 +41,7 @@ class ApplicationRequestController extends Controller
         ApplicationRequest::create($data);
 
         return redirect()->route('applications.index')
-            ->with('status', 'تمت إضافة طلب المشاركة.');
+            ->with('status', 'تمت إضافة طلب المشاركة بنجاح.');
     }
 
     public function edit(ApplicationRequest $application)
@@ -67,7 +67,7 @@ class ApplicationRequestController extends Controller
         $application->update($data);
 
         return redirect()->route('applications.index')
-            ->with('status', 'تم تحديث طلب المشاركة.');
+            ->with('status', 'تم تحديث طلب المشاركة بنجاح.');
     }
 
     public function destroy(ApplicationRequest $application)

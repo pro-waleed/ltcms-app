@@ -57,10 +57,13 @@
             </div>
         </form>
 
-        <div style="margin-top: 12px;">
+        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
             <a class="btn" href="{{ route('reports.export.csv', request()->query()) }}">تصدير CSV (Excel)</a>
-            <a class="btn" href="{{ route('reports.print', request()->query()) }}" style="margin-inline-start: 8px;">نسخة للطباعة (PDF)</a>
-            <a class="btn" href="{{ route('reports.sync') }}" style="margin-inline-start: 8px;">تحديث السجل التدريبي</a>
+            <a class="btn" href="{{ route('reports.print', request()->query()) }}">نسخة للطباعة</a>
+            <form method="post" action="{{ route('reports.sync') }}" style="margin: 0;">
+                @csrf
+                <button class="btn" type="submit">تحديث السجل التدريبي</button>
+            </form>
         </div>
     </div>
 

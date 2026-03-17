@@ -48,7 +48,7 @@ class OpportunityController extends Controller
         Opportunity::create($data);
 
         return redirect()->route('opportunities.index')
-            ->with('status', 'تم إلغاء الفرصة');
+            ->with('status', 'تمت إضافة الفرصة التدريبية بنجاح.');
     }
 
     public function edit(Opportunity $opportunity)
@@ -78,7 +78,7 @@ class OpportunityController extends Controller
         $opportunity->update($data);
 
         return redirect()->route('opportunities.index')
-            ->with('status', 'تم إلغاء الفرصة');
+            ->with('status', 'تم تحديث الفرصة التدريبية بنجاح.');
     }
 
     public function destroy(Opportunity $opportunity)
@@ -86,7 +86,7 @@ class OpportunityController extends Controller
         $opportunity->update(['status' => 'cancelled']);
 
         return redirect()->route('opportunities.index')
-            ->with('status', 'تم إلغاء الفرصة');
+            ->with('status', 'تم إلغاء الفرصة التدريبية.');
     }
 
     private function nextReference(): string

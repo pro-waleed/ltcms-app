@@ -48,7 +48,7 @@ class EmployeeController extends Controller
         Employee::create($data);
 
         return redirect()->route('employees.index')
-            ->with('status', 'تم حذف الموظف');
+            ->with('status', 'تمت إضافة الموظف بنجاح.');
     }
 
     public function edit(Employee $employee)
@@ -81,7 +81,7 @@ class EmployeeController extends Controller
         $employee->update($data);
 
         return redirect()->route('employees.index')
-            ->with('status', 'تم حذف الموظف');
+            ->with('status', 'تم تحديث بيانات الموظف بنجاح.');
     }
 
     public function destroy(Employee $employee)
@@ -89,6 +89,6 @@ class EmployeeController extends Controller
         $employee->delete();
 
         return redirect()->route('employees.index')
-            ->with('status', 'تم حذف الموظف');
+            ->with('status', 'تم حذف الموظف.');
     }
 }

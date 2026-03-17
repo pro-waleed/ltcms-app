@@ -57,7 +57,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/export/csv', [ReportController::class, 'exportCsv'])->name('reports.export.csv');
         Route::get('/reports/print', [ReportController::class, 'print'])->name('reports.print');
-        Route::get('/reports/sync', [ReportController::class, 'syncTrainingHistory'])->name('reports.sync');
+        Route::post('/reports/sync', [ReportController::class, 'syncTrainingHistory'])->name('reports.sync');
     });
 
     Route::middleware('role:system_admin')->group(function () {
@@ -69,4 +69,3 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports/viewer', [ReportController::class, 'index'])->name('reports.viewer');
     });
 });
-

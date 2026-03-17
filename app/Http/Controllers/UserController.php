@@ -45,7 +45,7 @@ class UserController extends Controller
 
         $user->roles()->sync($data['roles'] ?? []);
 
-        return redirect()->route('users.index')->with('status', 'تم حذف المستخدم');
+        return redirect()->route('users.index')->with('status', 'تمت إضافة المستخدم بنجاح.');
     }
 
     public function edit(User $user)
@@ -81,18 +81,18 @@ class UserController extends Controller
         $user->update($payload);
         $user->roles()->sync($data['roles'] ?? []);
 
-        return redirect()->route('users.index')->with('status', 'تم حذف المستخدم');
+        return redirect()->route('users.index')->with('status', 'تم تحديث المستخدم بنجاح.');
     }
 
     public function destroy(User $user)
     {
         if (auth()->id() === $user->id) {
-            return redirect()->route('users.index')->with('status', 'تم حذف المستخدم');
+            return redirect()->route('users.index')->with('status', 'لا يمكن حذف المستخدم الحالي أثناء تسجيل دخوله.');
         }
 
         $user->roles()->detach();
         $user->delete();
 
-        return redirect()->route('users.index')->with('status', 'تم حذف المستخدم');
+        return redirect()->route('users.index')->with('status', 'تم حذف المستخدم.');
     }
 }

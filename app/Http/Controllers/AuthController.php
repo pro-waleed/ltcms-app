@@ -19,13 +19,21 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt([
+            'username' => $credentials['username'],
+            'password' => $credentials['password'],
+            'is_active' => true,
+        ])) {
             $request->session()->regenerate();
+            $request->user()?->update([
+                'last_login_at' => now(),
+            ]);
+
             return redirect()->intended('/');
         }
 
         return back()->withErrors([
-            'username' => 'بيانات الدخول غير صحيحة.',
+            'username' => 'بيانات الدخول غير صحيحة أو أن الحساب غير مفعل.',
         ])->onlyInput('username');
     }
 

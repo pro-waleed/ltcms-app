@@ -171,7 +171,7 @@ class ReportController extends Controller
             ]);
         }
 
-        return redirect()->route('reports.index')->with('status', 'تم تحديث السجل التدريبي تلقائياً');
+        return redirect()->route('reports.index')->with('status', 'تم تحديث السجل التدريبي تلقائيًا.');
     }
 
     public function opportunityReport(Opportunity $opportunity)

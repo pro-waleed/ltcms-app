@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>مراجعة نظام LTCMS</title>
+    <style>
+        :root {
+            --bg: #f5f1ea;
+            --paper: #ffffff;
+            --ink: #1f2937;
+            --muted: #6b7280;
+            --brand: #0f3d3e;
+            --accent: #b7791f;
+            --line: #e5d7c4;
+            --ok: #166534;
+            --warn: #92400e;
+            --risk: #991b1b;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(183, 121, 31, 0.14), transparent 30%),
+                radial-gradient(circle at top left, rgba(15, 61, 62, 0.10), transparent 35%),
+                var(--bg);
+            color: var(--ink);
+            line-height: 1.8;
+        }
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+        }
+        .hero, .card {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: 0 14px 40px rgba(15, 61, 62, 0.08);
+        }
+        .hero {
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+        .hero h1 {
+            margin: 0 0 10px;
+            color: var(--brand);
+            font-size: 32px;
+        }
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+        }
+        .meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+        .pill {
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: #f9f5ef;
+            border: 1px solid var(--line);
+            font-size: 14px;
+        }
+        .grid {
+            display: grid;
+            gap: 18px;
+        }
+        .grid-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin-bottom: 20px;
+        }
+        .card {
+            padding: 20px;
+        }
+        .card h2, .card h3 {
+            margin-top: 0;
+            color: var(--brand);
+        }
+        .score {
+            font-size: 34px;
+            font-weight: 700;
+            color: var(--brand);
+        }
+        .tag {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 13px;
+            color: #fff;
+        }
+        .tag.ok { background: var(--ok); }
+        .tag.warn { background: var(--warn); }
+        .tag.risk { background: var(--risk); }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section ul {
+            margin: 10px 0 0;
+            padding: 0 18px 0 0;
+        }
+        .section li {
+            margin-bottom: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--line);
+            text-align: right;
+            vertical-align: top;
+        }
+        th {
+            background: #faf6f0;
+        }
+        .note {
+            background: #fdf8ef;
+            border: 1px dashed var(--line);
+            border-radius: 14px;
+            padding: 14px;
+            color: var(--muted);
+        }
+        .steps {
+            counter-reset: item;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .steps li {
+            counter-increment: item;
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            margin-bottom: 12px;
+            background: #fffdf9;
+        }
+        .steps li::before {
+            content: counter(item);
+            display: inline-grid;
+            place-items: center;
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+            border-radius: 50%;
+            color: #fff;
+            background: var(--brand);
+            font-weight: 700;
+        }
+        code {
+            font-family: Consolas, monospace;
+            background: #f6f6f6;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+        @media (max-width: 800px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <h1>مراجعة وتحسين نظام LTCMS</h1>
+            <p>
+                هذا التقرير يمثل الخطوة الأولى في تطوير النظام. تم بناؤه بعد فحص بنية المشروع،
+                المسارات، المهاجرات، المتحكمات، النماذج، الواجهات، البذور، والأدوات المساندة.
+            </p>
+            <div class="meta">
+                <span class="pill">المشروع: LTCMS App</span>
+                <span class="pill">الإطار: Laravel 12</span>
+                <span class="pill">تاريخ المراجعة: 2026-03-17</span>
+                <span class="pill">حالة التقرير: الخطوة 1 من خطة التطوير</span>
+            </div>
+        </section>
+
+        <section class="grid grid-3">
+            <div class="card">
+                <div class="score">6/10</div>
+                <h3>الجاهزية العامة</h3>
+                <div class="tag warn">تشغيلي أولي</div>
+                <p>النظام صالح للعرض الداخلي والتجربة، لكنه يحتاج إعادة تنظيم قبل الاعتماد المؤسسي الكامل.</p>
+            </div>
+            <div class="card">
+                <div class="score">4/10</div>
+                <h3>النضج التقني</h3>
+                <div class="tag risk">دين تقني مرتفع</div>
+                <p>منطق الأعمال متكدس في المتحكمات والاختبارات الفعلية شبه غائبة.</p>
+            </div>
+            <div class="card">
+                <div class="score">7/10</div>
+                <h3>وضوح مجال العمل</h3>
+                <div class="tag ok">جيد</div>
+                <p>كيانات النظام الأساسية واضحة: فرص، ترشيحات، موظفون، شركاء، تمويل، تقارير.</p>
+            </div>
+        </section>
+
+        <section class="card section">
+            <h2>أهم النتائج</h2>
+            <ul>
+                <li>هناك خلل ترميز عربي واسع الانتشار في الواجهات والرسائل والبذور، ما يؤثر مباشرة على العرض والموثوقية.</li>
+                <li>عدد من رسائل النجاح لا يطابق العملية المنفذة، ما يكشف تكرار نسخ ولصق داخل طبقة التحكم.</li>
+                <li>المصادقة الحالية لا تستفيد من الحقول الموجودة مثل <code>is_active</code> و <code>last_login_at</code>.</li>
+                <li>توليد الأرقام المرجعية داخل التطبيق غير آمن في حالات التزامن الكثيف.</li>
+                <li>منطق استيراد الترشيحات كبير جدًا ومحمول داخل متحكم واحد بدل خدمة مخصصة قابلة للاختبار.</li>
+                <li>بعض العمليات المعدلة للبيانات مربوطة بطلبات <code>GET</code> وهذا يجب تصحيحه.</li>
+                <li>التقارير الحالية مفيدة كمرحلة أولى لكنها لا تقيس العدالة أو الأثر الحقيقي للتدريب.</li>
+                <li>README والاختبارات ما زالا في الحالة الافتراضية تقريبًا.</li>
+            </ul>
+        </section>
+
+        <section class="card section">
+            <h2>الأولويات التنفيذية</h2>
+            <ol class="steps">
+                <li>إصلاح الترميز العربي بالكامل في الملفات والبيانات ورسائل النظام.</li>
+                <li>تصحيح الرسائل والسلوكيات الخاطئة في جميع عمليات الإنشاء والتحديث والحذف.</li>
+                <li>تأمين المصادقة والصلاحيات وتفعيل المستخدم النشط وتسجيل آخر دخول.</li>
+                <li>تفكيك منطق الأعمال إلى <code>Form Requests</code> و <code>Services</code> و <code>Actions</code>.</li>
+                <li>إعادة بناء الاستيراد والمزامنة كعمليات آمنة قابلة للتتبع والتراجع.</li>
+                <li>إعادة تعريف مؤشرات التقارير لتقيس القبول، الإكمال، العدالة، والتغطية المؤسسية.</li>
+                <li>بناء اختبارات حقيقية لسيناريوهات العمل الأساسية.</li>
+                <li>تحسين الواجهة إلى مكونات قابلة للصيانة مع فصل CSS وJavaScript.</li>
+            </ol>
+        </section>
+
+        <section class="card section">
+            <h2>خريطة التطوير المقترحة</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>المرحلة</th>
+                        <th>الهدف</th>
+                        <th>المخرجات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>المرحلة 1</td>
+                        <td>تثبيت الأساس</td>
+                        <td>إصلاح الترميز، تصحيح الرسائل، تأمين العمليات، توثيق المشروع</td>
+                    </tr>
+                    <tr>
+                        <td>المرحلة 2</td>
+                        <td>إعادة التنظيم الداخلي</td>
+                        <td>Services, Requests, Enums, Import layer, Report queries</td>
+                    </tr>
+                    <tr>
+                        <td>المرحلة 3</td>
+                        <td>رفع القيمة الأعمالية</td>
+                        <td>دورة حياة متكاملة للفرص والترشيحات، مفاضلة، أرشفة، سجل تدقيق</td>
+                    </tr>
+                    <tr>
+                        <td>المرحلة 4</td>
+                        <td>النضج المؤسسي</td>
+                        <td>اختبارات، مؤشرات أداء، تحسين أداء، قابلية مشاركة واعتماد أكبر</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="card section">
+            <h2>ما الذي سنبدأ به الآن</h2>
+            <p>
+                بداية التنفيذ العملية ستكون من المرحلة 1، وبالتحديد:
+                إصلاح النصوص العربية ورسائل النظام، ثم تثبيت سلوك المصادقة، ثم نقل أول جزء
+                من منطق الأعمال إلى طبقة منظمة قابلة للتوسع.
+            </p>
+            <div class="note">
+                هذا الملف موجود داخل <code>public/system-review.html</code>.
+                إذا كان المشروع يعمل على خادم Laravel محلي أو مستضاف، فسيكون الرابط المباشر:
+                <code>/system-review.html</code>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
