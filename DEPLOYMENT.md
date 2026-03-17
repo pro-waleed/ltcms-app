@@ -28,7 +28,7 @@ Recommended values:
 - `APP_ENV=production`
 - `APP_DEBUG=false`
 - `DB_CONNECTION=pgsql`
-- `SESSION_DRIVER=file`
+- `SESSION_DRIVER=cookie`
 - `CACHE_STORE=file`
 - `QUEUE_CONNECTION=sync`
 - `SESSION_SECURE_COOKIE=true`
@@ -64,7 +64,7 @@ Minimum database-backed tables required by the current app:
 
 For the current Render deployment, the recommended stable setup is:
 
-- `SESSION_DRIVER=file`
+- `SESSION_DRIVER=cookie`
 - `CACHE_STORE=file`
 - `QUEUE_CONNECTION=sync`
 
