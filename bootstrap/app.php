@@ -14,6 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
+
+        // Temporary production-safe workaround for Render login CSRF/session mismatch.
+        $middleware->validateCsrfTokens(except: [
+            'login',
+            'logout',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
