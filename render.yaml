@@ -1,3 +1,9 @@
+databases:
+  - name: ltcms-db
+    plan: starter
+    databaseName: ltcms
+    user: ltcms
+
 services:
   - type: web
     name: ltcms-app
@@ -17,15 +23,31 @@ services:
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
-        sync: false
+        fromDatabase:
+          name: ltcms-db
+          property: host
       - key: DB_PORT
-        value: "5432"
+        fromDatabase:
+          name: ltcms-db
+          property: port
       - key: DB_DATABASE
-        sync: false
+        fromDatabase:
+          name: ltcms-db
+          property: database
       - key: DB_USERNAME
-        sync: false
+        fromDatabase:
+          name: ltcms-db
+          property: user
       - key: DB_PASSWORD
-        sync: false
+        fromDatabase:
+          name: ltcms-db
+          property: password
+      - key: DB_URL
+        fromDatabase:
+          name: ltcms-db
+          property: connectionString
+      - key: DB_SSLMODE
+        value: require
       - key: SESSION_DRIVER
         value: database
       - key: CACHE_STORE

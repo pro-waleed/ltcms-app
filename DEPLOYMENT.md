@@ -27,6 +27,7 @@ Recommended values:
 
 - `APP_ENV=production`
 - `APP_DEBUG=false`
+- `DB_CONNECTION=pgsql`
 - `SESSION_DRIVER=database`
 - `CACHE_STORE=database`
 - `QUEUE_CONNECTION=database`
@@ -44,6 +45,39 @@ If this is the first deployment, seed the core roles and admin user:
 
 ```bash
 php artisan db:seed --force
+```
+
+## Recommended production database
+
+Use PostgreSQL for production.
+
+Minimum database-backed tables required by the current app:
+
+- `migrations`
+- `sessions`
+- `cache`
+- `cache_locks`
+- `jobs`
+- `job_batches`
+- `failed_jobs`
+- all LTCMS business tables from the domain migrations
+
+The project now includes a dedicated migration for the `sessions` table, which is required because the app uses:
+
+- `SESSION_DRIVER=database`
+- `CACHE_STORE=database`
+- `QUEUE_CONNECTION=database`
+
+## Example production database variables
+
+```bash
+DB_CONNECTION=pgsql
+DB_HOST=your-postgres-host
+DB_PORT=5432
+DB_DATABASE=ltcms
+DB_USERNAME=ltcms
+DB_PASSWORD=your-strong-password
+DB_SSLMODE=require
 ```
 
 ## Local container test
