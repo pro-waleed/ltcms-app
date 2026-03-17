@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Http\Controllers\ApplicationRequestController;
 use App\Http\Controllers\AuthController;
