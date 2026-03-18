@@ -50,7 +50,8 @@ php artisan db:seed --force
 Important:
 
 - Do not run `db:seed` automatically on every deploy.
-- The production container is now configured to run migrations on startup, but seeding is disabled by default.
+- The production container now runs a safe bootstrap seeder on startup to ensure roles, opportunity types, and the `admin` account exist without touching business data.
+- Full application seeding remains disabled by default.
 - If you explicitly need boot-time seeding for a fresh environment, temporarily set `SEED_CORE_DATA_ON_BOOT=true`, then return it to `false` after initial bootstrap.
 
 ## Recommended production database

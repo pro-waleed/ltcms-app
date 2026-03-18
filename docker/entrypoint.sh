@@ -6,6 +6,7 @@ if [ -z "$APP_KEY" ]; then
 fi
 
 php artisan migrate --force
+php artisan db:seed --class=Database\\Seeders\\SystemBootstrapSeeder --force
 
 if [ "${SEED_CORE_DATA_ON_BOOT:-false}" = "true" ]; then
     php artisan db:seed --force
