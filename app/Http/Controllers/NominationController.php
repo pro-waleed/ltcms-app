@@ -25,10 +25,12 @@ class NominationController extends Controller
     public function create()
     {
         $opportunities = Opportunity::orderByDesc('id')->get();
-        $employees = Employee::orderBy('full_name')->get();
         $departments = Department::orderBy('name')->get();
+        $selectedEmployee = session()->getOldInput('employee_id')
+            ? Employee::with('department')->find(session()->getOldInput('employee_id'))
+            : null;
 
-        return view('nominations.create', compact('opportunities', 'employees', 'departments'));
+        return view('nominations.create', compact('opportunities', 'departments', 'selectedEmployee'));
     }
 
     public function store(Request $request)
@@ -55,10 +57,13 @@ class NominationController extends Controller
     public function edit(Nomination $nomination)
     {
         $opportunities = Opportunity::orderByDesc('id')->get();
-        $employees = Employee::orderBy('full_name')->get();
         $departments = Department::orderBy('name')->get();
+        $selectedEmployeeId = session()->getOldInput('employee_id', $nomination->employee_id);
+        $selectedEmployee = $selectedEmployeeId
+            ? Employee::with('department')->find($selectedEmployeeId)
+            : null;
 
-        return view('nominations.edit', compact('nomination', 'opportunities', 'employees', 'departments'));
+        return view('nominations.edit', compact('nomination', 'opportunities', 'departments', 'selectedEmployee'));
     }
 
     public function update(Request $request, Nomination $nomination)

@@ -29,11 +29,13 @@ class ApplicationRequestController extends Controller
 
     public function create()
     {
-        $employees = Employee::orderBy('full_name')->get();
         $opportunities = Opportunity::orderByDesc('id')->get();
         $statuses = $this->statuses();
+        $selectedEmployee = session()->getOldInput('employee_id')
+            ? Employee::with('department')->find(session()->getOldInput('employee_id'))
+            : null;
 
-        return view('applications.create', compact('employees', 'opportunities', 'statuses'));
+        return view('applications.create', compact('opportunities', 'statuses', 'selectedEmployee'));
     }
 
     public function store(Request $request)
@@ -63,11 +65,14 @@ class ApplicationRequestController extends Controller
 
     public function edit(ApplicationRequest $application)
     {
-        $employees = Employee::orderBy('full_name')->get();
         $opportunities = Opportunity::orderByDesc('id')->get();
         $statuses = $this->statuses();
+        $selectedEmployeeId = session()->getOldInput('employee_id', $application->employee_id);
+        $selectedEmployee = $selectedEmployeeId
+            ? Employee::with('department')->find($selectedEmployeeId)
+            : null;
 
-        return view('applications.edit', compact('application', 'employees', 'opportunities', 'statuses'));
+        return view('applications.edit', compact('application', 'opportunities', 'statuses', 'selectedEmployee'));
     }
 
     public function update(Request $request, ApplicationRequest $application)

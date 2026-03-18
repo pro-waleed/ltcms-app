@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/search', [SearchController::class, 'index'])->name('search.index');
     Route::get('/search/suggest', [SearchController::class, 'suggest'])->name('search.suggest');
+    Route::get('/search/employees', [SearchController::class, 'employees'])->name('search.employees');
 
     Route::middleware('employee.portal')->prefix('portal')->group(function () {
         Route::get('/', [EmployeePortalController::class, 'dashboard'])->name('portal.dashboard');

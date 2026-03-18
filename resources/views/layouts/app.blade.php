@@ -498,6 +498,73 @@
         .search-suggest a:hover { background: rgba(244, 227, 207, 0.36); }
         .search-suggest .label { color: var(--muted); font-size: 0.78rem; margin-inline-start: 8px; }
 
+        .helper-text {
+            color: var(--muted);
+            font-size: 0.82rem;
+        }
+
+        .employee-lookup {
+            position: relative;
+            display: grid;
+            gap: 10px;
+        }
+
+        .lookup-selected {
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(230, 216, 196, 1);
+            background: rgba(255, 251, 245, 0.92);
+        }
+
+        .lookup-selected.is-empty {
+            background: rgba(255,255,255,0.72);
+        }
+
+        .lookup-results {
+            display: none;
+            position: absolute;
+            inset-inline-start: 0;
+            inset-inline-end: 0;
+            top: calc(100% - 2px);
+            z-index: 25;
+            max-height: 280px;
+            overflow: auto;
+            border-radius: 16px;
+            border: 1px solid rgba(230, 216, 196, 1);
+            background: rgba(255,255,255,0.98);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .lookup-results.active {
+            display: block;
+        }
+
+        .lookup-option {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid rgba(230, 216, 196, 0.9);
+            background: transparent;
+            text-align: right;
+            padding: 12px 14px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .lookup-option strong,
+        .lookup-option span {
+            display: block;
+        }
+
+        .lookup-option span {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 0.84rem;
+        }
+
+        .lookup-option:hover {
+            background: rgba(244, 227, 207, 0.32);
+        }
+
         .logout button {
             min-height: 42px;
             border: 1px solid rgba(230, 216, 196, 1);

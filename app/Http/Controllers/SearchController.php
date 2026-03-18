@@ -181,4 +181,36 @@ class SearchController extends Controller
 
         return response()->json(['results' => $results]);
     }
+
+    public function employees(Request $request)
+    {
+        $query = trim((string) $request->input('q', ''));
+        if (mb_strlen($query) < 2) {
+            return response()->json(['results' => []]);
+        }
+
+        $employees = Employee::query()
+            ->with('department')
+            ->where(function ($builder) use ($query) {
+                $builder->where('full_name', 'like', "%{$query}%")
+                    ->orWhere('employee_no', 'like', "%{$query}%")
+                    ->orWhere('job_title', 'like', "%{$query}%");
+            })
+            ->orderBy('full_name')
+            ->limit(12)
+            ->get();
+
+        $results = $employees->map(function ($employee) {
+            return [
+                'id' => $employee->id,
+                'name' => $employee->full_name,
+                'employee_no' => $employee->employee_no,
+                'department' => optional($employee->department)->name,
+                'job_title' => $employee->job_title,
+                'label' => trim($employee->full_name . ' - ' . ($employee->employee_no ?: 'بدون رقم')),
+            ];
+        })->values();
+
+        return response()->json(['results' => $results]);
+    }
 }
