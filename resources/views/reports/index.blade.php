@@ -24,7 +24,7 @@
 
     <div class="card" style="margin-bottom: 16px;">
         <h3>التقارير والمتابعة</h3>
-        <p class="muted">تصفية فرص التدريب مع مؤشرات الطلبات والترشيحات والتصدير.</p>
+        <p class="muted">تصفية فرص التدريب مع مؤشرات الطلبات والترشيحات ومتابعة جاهزية القرار النهائي لكل فرصة.</p>
 
         <form method="get" action="{{ route('reports.index') }}" class="form">
             <div class="grid grid-2">
@@ -208,11 +208,14 @@
                 <tr>
                     <th>الرقم المرجعي</th>
                     <th>العنوان</th>
+                    <th>المقاعد</th>
                     <th>النمط</th>
                     <th>الحالة</th>
                     <th>عدد الطلبات</th>
                     <th>الطلبات المقبولة</th>
                     <th>الترشيحات</th>
+                    <th>الأساسي / الاحتياطي</th>
+                    <th>جاهزية القرار</th>
                     <th>تقرير تفصيلي</th>
                 </tr>
             </thead>
@@ -221,15 +224,22 @@
                     <tr>
                         <td>{{ $opportunity->reference_no }}</td>
                         <td>{{ $opportunity->title }}</td>
+                        <td>{{ $opportunity->seats ?: '-' }}</td>
                         <td>{{ $opportunity->delivery_mode }}</td>
                         <td><span class="badge">{{ $opportunity->status }}</span></td>
                         <td>{{ $opportunity->application_requests_count }}</td>
                         <td>{{ $opportunity->approved_applications_count }}</td>
                         <td>{{ $opportunity->nominations_count }}</td>
+                        <td>{{ $opportunity->primary_count }} / {{ $opportunity->reserve_count }}</td>
+                        <td>
+                            <span class="badge {{ $opportunity->decision_state === 'ready' ? 'success' : 'warning' }}">
+                                {{ $opportunity->decision_label }}
+                            </span>
+                        </td>
                         <td><a class="link" href="{{ route('reports.opportunity', $opportunity) }}">عرض</a></td>
                     </tr>
                 @empty
-                    <tr><td colspan="8" class="muted">لا توجد بيانات للعرض.</td></tr>
+                    <tr><td colspan="11" class="muted">لا توجد بيانات للعرض.</td></tr>
                 @endforelse
             </tbody>
         </table>

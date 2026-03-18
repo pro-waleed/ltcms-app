@@ -6,7 +6,7 @@
     <div class="card">
         <h3>إضافة فرصة تدريبية</h3>
         @if($types->isEmpty())
-            <p class="muted">لا توجد أنواع فرص مسجلة. شغل Seeder أو أضفها يدويًا في قاعدة البيانات.</p>
+            <p class="muted">لا توجد أنواع فرص مسجلة. أضف نوعًا واحدًا على الأقل قبل إنشاء الفرصة.</p>
         @endif
         <form method="post" action="{{ route('opportunities.store') }}" class="form">
             @csrf
@@ -43,6 +43,10 @@
                 <label>
                     اللغة
                     <input type="text" name="language" value="{{ old('language') }}">
+                </label>
+                <label>
+                    عدد المقاعد
+                    <input type="number" name="seats" min="1" value="{{ old('seats') }}">
                 </label>
                 <label>
                     حالة الفرصة

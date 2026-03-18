@@ -8,6 +8,7 @@ use App\Models\Nomination;
 use App\Models\Opportunity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class ApplicationRequestController extends Controller
 {
@@ -38,7 +39,12 @@ class ApplicationRequestController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'employee_id' => ['required', 'exists:employees,id'],
+            'employee_id' => [
+                'required',
+                'exists:employees,id',
+                Rule::unique('application_requests')
+                    ->where(fn ($query) => $query->where('opportunity_id', $request->input('opportunity_id'))),
+            ],
             'opportunity_id' => ['required', 'exists:opportunities,id'],
             'request_date' => ['nullable', 'date'],
             'status' => ['required', 'in:submitted,under_review,approved,rejected,withdrawn'],
@@ -67,7 +73,13 @@ class ApplicationRequestController extends Controller
     public function update(Request $request, ApplicationRequest $application)
     {
         $data = $request->validate([
-            'employee_id' => ['required', 'exists:employees,id'],
+            'employee_id' => [
+                'required',
+                'exists:employees,id',
+                Rule::unique('application_requests')
+                    ->ignore($application->id)
+                    ->where(fn ($query) => $query->where('opportunity_id', $request->input('opportunity_id'))),
+            ],
             'opportunity_id' => ['required', 'exists:opportunities,id'],
             'request_date' => ['nullable', 'date'],
             'status' => ['required', 'in:submitted,under_review,approved,rejected,withdrawn'],
@@ -86,10 +98,13 @@ class ApplicationRequestController extends Controller
 
     public function destroy(ApplicationRequest $application)
     {
-        $application->delete();
+        DB::transaction(function () use ($application) {
+            $application->nomination()?->delete();
+            $application->delete();
+        });
 
         return redirect()->route('applications.index')
-            ->with('status', 'تم حذف طلب المشاركة.');
+            ->with('status', 'تم حذف طلب المشاركة وما يرتبط به من ترشيح تلقائي.');
     }
 
     private function statuses(): array
@@ -138,6 +153,8 @@ class ApplicationRequestController extends Controller
 
         $nomination->update([
             'status' => $mappedStatus,
+            'selection_category' => null,
+            'rank_order' => null,
             'nomination_reason' => $application->decision_reason,
             'notes' => $application->notes,
         ]);

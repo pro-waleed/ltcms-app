@@ -35,6 +35,7 @@ class ReportController extends Controller
         }
 
         $opportunities = $base->orderByDesc('id')->paginate(25)->withQueryString();
+        $this->decorateOpportunityRows($opportunities);
 
         $stats = [
             'opportunities_total' => Opportunity::count(),
@@ -272,6 +273,14 @@ class ReportController extends Controller
             ->filter(fn ($application) => in_array($application->status, ['submitted', 'under_review'], true))
             ->values();
 
+        $approvedUnassigned = $applications
+            ->filter(function ($application) {
+                return $application->status === 'approved'
+                    && $application->nomination
+                    && empty($application->nomination->selection_category);
+            })
+            ->values();
+
         $seats = $opportunity->seats ?: 0;
         $primaryCount = $primary->count();
 
@@ -287,9 +296,61 @@ class ReportController extends Controller
                 'reserve_count' => $reserve->count(),
                 'rejected_count' => $rejected->count(),
                 'pending_count' => $pending->count(),
+                'approved_unassigned' => $approvedUnassigned,
+                'approved_unassigned_count' => $approvedUnassigned->count(),
                 'seat_gap' => max(0, $seats - $primaryCount),
                 'seat_surplus' => max(0, $primaryCount - $seats),
             ],
         ];
+    }
+
+    private function decorateOpportunityRows($paginator): void
+    {
+        $paginator->getCollection()->load(['applicationRequests.nomination']);
+
+        $paginator->setCollection(
+            $paginator->getCollection()->map(function (Opportunity $opportunity) {
+                $applications = $opportunity->applicationRequests;
+                $primaryCount = $applications->filter(
+                    fn ($application) => optional($application->nomination)->selection_category === 'primary'
+                )->count();
+                $reserveCount = $applications->filter(
+                    fn ($application) => optional($application->nomination)->selection_category === 'reserve'
+                )->count();
+                $approvedUnassignedCount = $applications->filter(function ($application) {
+                    return $application->status === 'approved'
+                        && $application->nomination
+                        && empty($application->nomination->selection_category);
+                })->count();
+                $pendingCount = $applications->whereIn('status', ['submitted', 'under_review'])->count();
+                $seats = (int) ($opportunity->seats ?? 0);
+
+                $decisionState = 'ready';
+                $decisionLabel = 'مكتمل';
+
+                if ($approvedUnassignedCount > 0) {
+                    $decisionState = 'needs_assignment';
+                    $decisionLabel = 'ينتظر تصنيف المقبولين';
+                } elseif ($pendingCount > 0) {
+                    $decisionState = 'pending_review';
+                    $decisionLabel = 'توجد طلبات قيد المراجعة';
+                } elseif ($seats > 0 && $primaryCount < $seats) {
+                    $decisionState = 'under_capacity';
+                    $decisionLabel = 'عدد الأساسيين أقل من المقاعد';
+                } elseif ($seats > 0 && $primaryCount > $seats) {
+                    $decisionState = 'over_capacity';
+                    $decisionLabel = 'عدد الأساسيين يتجاوز المقاعد';
+                }
+
+                $opportunity->setAttribute('primary_count', $primaryCount);
+                $opportunity->setAttribute('reserve_count', $reserveCount);
+                $opportunity->setAttribute('approved_unassigned_count', $approvedUnassignedCount);
+                $opportunity->setAttribute('pending_applications_count', $pendingCount);
+                $opportunity->setAttribute('decision_state', $decisionState);
+                $opportunity->setAttribute('decision_label', $decisionLabel);
+
+                return $opportunity;
+            })
+        );
     }
 }

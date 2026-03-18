@@ -342,6 +342,8 @@ class NominationController extends Controller
                 'withdrawn' => 'declined',
                 default => 'under_review',
             },
+            'selection_category' => null,
+            'rank_order' => null,
             'nomination_reason' => $application->decision_reason,
             'notes' => $application->notes,
         ]);

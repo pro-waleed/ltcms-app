@@ -32,6 +32,15 @@
         </div>
     </div>
 
+    @if($decision['approved_unassigned_count'] > 0)
+        <div class="card" style="margin-bottom: 16px; border-color: #fcd34d; background: #fffaf0;">
+            <h3 style="color: #92400e;">تنبيه تكاملي</h3>
+            <p class="muted" style="margin: 0; line-height: 1.9;">
+                يوجد <strong>{{ $decision['approved_unassigned_count'] }}</strong> طلب/طلبات مقبولة لكن لم تُصنف بعد كأساسي أو احتياطي.
+            </p>
+        </div>
+    @endif
+
     <div class="card" style="margin-bottom: 16px;">
         <h3>خلاصة المحضر</h3>
         <p class="muted" style="line-height: 1.9; margin: 0;">
@@ -153,4 +162,28 @@
             @endif
         </div>
     </div>
+
+    @if($decision['approved_unassigned_count'] > 0)
+        <div class="card" style="margin-top: 16px;">
+            <h3>طلبات مقبولة دون تصنيف نهائي</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>الموظف</th>
+                        <th>الإدارة</th>
+                        <th>الترتيب الحالي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($decision['approved_unassigned'] as $application)
+                        <tr>
+                            <td>{{ optional($application->employee)->full_name }}</td>
+                            <td>{{ optional(optional($application->employee)->department)->name ?? '-' }}</td>
+                            <td>{{ $application->nomination?->rank_order ?? '-' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
 @endsection

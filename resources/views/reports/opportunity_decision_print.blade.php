@@ -21,7 +21,8 @@
         الأساسي: {{ $decision['primary_count'] }} |
         الاحتياطي: {{ $decision['reserve_count'] }} |
         المرفوضون/المنسحبون: {{ $decision['rejected_count'] }} |
-        قيد المراجعة: {{ $decision['pending_count'] }}
+        قيد المراجعة: {{ $decision['pending_count'] }} |
+        مقبول دون تصنيف: {{ $decision['approved_unassigned_count'] }}
     </p>
 
     <div class="section">

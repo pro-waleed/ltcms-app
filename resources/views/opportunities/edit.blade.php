@@ -43,6 +43,10 @@
                     <input type="text" name="language" value="{{ old('language', $opportunity->language) }}">
                 </label>
                 <label>
+                    عدد المقاعد
+                    <input type="number" name="seats" min="1" value="{{ old('seats', $opportunity->seats) }}">
+                </label>
+                <label>
                     حالة الفرصة
                     <select name="status">
                         @foreach(['draft' => 'مسودة','received' => 'واردة','under_review' => 'قيد الدراسة','open_for_nomination' => 'مفتوحة للترشيح','closed' => 'مغلقة','nominated' => 'تم الترشيح','executed' => 'منفذة','closed_no_benefit' => 'أغلقت دون استفادة','referred' => 'محالة','cancelled' => 'ملغاة'] as $key => $label)
