@@ -115,6 +115,8 @@ class ApplicationRequestController extends Controller
                 'nomination_date' => $application->request_date ?? now()->toDateString(),
                 'nomination_type' => 'application',
                 'status' => 'nominated',
+                'selection_category' => $nomination->selection_category,
+                'rank_order' => $nomination->rank_order,
                 'nomination_reason' => $application->decision_reason,
                 'notes' => $application->notes,
             ]);

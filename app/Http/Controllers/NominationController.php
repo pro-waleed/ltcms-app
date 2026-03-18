@@ -111,6 +111,10 @@ class NominationController extends Controller
             'opportunity_id' => ['required', 'exists:opportunities,id'],
             'application_status' => ['array'],
             'application_status.*' => ['nullable', 'in:submitted,under_review,approved,rejected,withdrawn'],
+            'selection_category' => ['array'],
+            'selection_category.*' => ['nullable', 'in:primary,reserve'],
+            'rank_order' => ['array'],
+            'rank_order.*' => ['nullable', 'integer', 'min:1'],
             'decision_reason' => ['array'],
             'decision_reason.*' => ['nullable', 'string'],
             'notes' => ['array'],
@@ -119,6 +123,8 @@ class NominationController extends Controller
 
         $opportunityId = (int) $data['opportunity_id'];
         $statuses = $data['application_status'] ?? [];
+        $selectionCategories = $data['selection_category'] ?? [];
+        $rankOrders = $data['rank_order'] ?? [];
         $reasons = $data['decision_reason'] ?? [];
         $notes = $data['notes'] ?? [];
 
@@ -139,7 +145,11 @@ class NominationController extends Controller
 
             if (!empty($updates)) {
                 $application->update($updates);
-                $this->syncNominationFromApplication($application->fresh(['employee']));
+                $this->syncNominationFromApplication(
+                    $application->fresh(['employee']),
+                    $selectionCategories[$id] ?? null,
+                    $rankOrders[$id] ?? null
+                );
             }
         }
 
@@ -293,7 +303,7 @@ class NominationController extends Controller
             ->with('status', 'تم إغلاق الترشيح');
     }
 
-    private function syncNominationFromApplication(ApplicationRequest $application): void
+    private function syncNominationFromApplication(ApplicationRequest $application, ?string $selectionCategory = null, ?int $rankOrder = null): void
     {
         $nomination = Nomination::firstOrNew([
             'application_request_id' => $application->id,
@@ -311,6 +321,8 @@ class NominationController extends Controller
                 'nomination_date' => $application->request_date ?? now()->toDateString(),
                 'nomination_type' => 'application',
                 'status' => 'nominated',
+                'selection_category' => $selectionCategory ?: $nomination->selection_category,
+                'rank_order' => $rankOrder ?: $nomination->rank_order,
                 'nomination_reason' => $application->decision_reason,
                 'notes' => $application->notes,
             ]);

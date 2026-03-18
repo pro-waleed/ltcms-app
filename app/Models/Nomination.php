@@ -20,6 +20,8 @@ class Nomination extends Model
         'nomination_date',
         'nomination_type',
         'status',
+        'selection_category',
+        'rank_order',
         'accepted',
         'declined',
         'attended',
@@ -49,6 +51,14 @@ class Nomination extends Model
             'not_attended' => 'لم يشارك',
             'completed' => 'مكتمل',
             'closed' => 'مغلق',
+        ];
+    }
+
+    public static function selectionLabels(): array
+    {
+        return [
+            'primary' => 'أساسي',
+            'reserve' => 'احتياطي',
         ];
     }
 

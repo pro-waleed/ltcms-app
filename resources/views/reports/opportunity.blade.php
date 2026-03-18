@@ -39,6 +39,8 @@
                     <th>الإدارة</th>
                     <th>حالة الطلب</th>
                     <th>حالة الترشيح</th>
+                    <th>فئة الترشيح</th>
+                    <th>الترتيب</th>
                     <th>مبرر القرار</th>
                 </tr>
             </thead>
@@ -55,10 +57,12 @@
                                 <span class="muted">غير منشأ</span>
                             @endif
                         </td>
+                        <td>{{ $application->nomination ? (\App\Models\Nomination::selectionLabels()[$application->nomination->selection_category] ?? '-') : '-' }}</td>
+                        <td>{{ $application->nomination?->rank_order ?? '-' }}</td>
                         <td>{{ $application->decision_reason ?: '-' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="muted">لا يوجد متقدمون لهذه الفرصة.</td></tr>
+                    <tr><td colspan="7" class="muted">لا يوجد متقدمون لهذه الفرصة.</td></tr>
                 @endforelse
             </tbody>
         </table>

@@ -49,6 +49,8 @@
                             <th>الإدارة</th>
                             <th>حالة الطلب</th>
                             <th>حالة الترشيح</th>
+                            <th>فئة الترشيح</th>
+                            <th>الترتيب</th>
                             <th>مبرر القرار</th>
                             <th>ملاحظات</th>
                         </tr>
@@ -73,6 +75,17 @@
                                     @endif
                                 </td>
                                 <td>
+                                    <select name="selection_category[{{ $application->id }}]">
+                                        <option value="">غير محدد</option>
+                                        @foreach(\App\Models\Nomination::selectionLabels() as $key => $label)
+                                            <option value="{{ $key }}" @selected(optional($application->nomination)->selection_category === $key)>{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" name="rank_order[{{ $application->id }}]" min="1" value="{{ optional($application->nomination)->rank_order }}">
+                                </td>
+                                <td>
                                     <textarea name="decision_reason[{{ $application->id }}]" rows="2">{{ $application->decision_reason }}</textarea>
                                 </td>
                                 <td>
@@ -80,7 +93,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="muted">لا يوجد متقدمون لهذه الفرصة.</td></tr>
+                            <tr><td colspan="8" class="muted">لا يوجد متقدمون لهذه الفرصة.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
