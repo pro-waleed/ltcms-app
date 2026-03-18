@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'employee.portal' => \App\Http\Middleware\EmployeePortalMiddleware::class,
         ]);
 
         // Temporary production-safe workaround for Render login CSRF/session mismatch.

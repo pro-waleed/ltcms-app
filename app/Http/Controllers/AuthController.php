@@ -29,7 +29,7 @@ class AuthController extends Controller
                 'last_login_at' => now(),
             ]);
 
-            return redirect()->intended('/');
+            return redirect()->intended(route('dashboard'));
         }
 
         return back()->withErrors([
@@ -43,6 +43,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('home');
     }
 }

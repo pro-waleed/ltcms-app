@@ -9,9 +9,21 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('roles')->orderByDesc('id')->paginate(25);
+        $users = User::with(['roles', 'employee', 'approver'])
+            ->when($request->filled('approval_status'), function ($query) use ($request) {
+                if ($request->string('approval_status')->toString() === 'pending') {
+                    $query->whereNotNull('employee_id')->where('approval_status', 'pending');
+                }
+
+                if ($request->string('approval_status')->toString() === 'approved') {
+                    $query->whereNotNull('employee_id')->where('approval_status', 'approved');
+                }
+            })
+            ->orderByDesc('id')
+            ->paginate(25)
+            ->withQueryString();
 
         return view('users.index', compact('users'));
     }
@@ -41,6 +53,9 @@ class UserController extends Controller
             'email' => $data['email'] ?? null,
             'password' => Hash::make($data['password']),
             'is_active' => $request->boolean('is_active'),
+            'approval_status' => 'approved',
+            'approved_at' => now(),
+            'approved_by' => auth()->id(),
         ]);
 
         $user->roles()->sync($data['roles'] ?? []);
@@ -94,5 +109,31 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route('users.index')->with('status', 'تم حذف المستخدم.');
+    }
+
+    public function approve(User $user)
+    {
+        abort_unless($user->isEmployeeAccount(), 404);
+
+        $user->update([
+            'approval_status' => 'approved',
+            'approved_at' => now(),
+            'approved_by' => auth()->id(),
+        ]);
+
+        return redirect()->route('users.index')->with('status', 'تم اعتماد الموظف ويمكنه الآن التقديم على الفرص.');
+    }
+
+    public function markPending(User $user)
+    {
+        abort_unless($user->isEmployeeAccount(), 404);
+
+        $user->update([
+            'approval_status' => 'pending',
+            'approved_at' => null,
+            'approved_by' => null,
+        ]);
+
+        return redirect()->route('users.index')->with('status', 'تمت إعادة الموظف إلى حالة انتظار الاعتماد.');
     }
 }

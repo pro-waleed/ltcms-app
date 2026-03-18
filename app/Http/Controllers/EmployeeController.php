@@ -22,14 +22,15 @@ class EmployeeController extends Controller
     {
         $departments = Department::orderBy('name')->get();
         $missions = Mission::orderBy('name')->get();
+        $nextEmployeeNo = Employee::nextEmployeeNumber();
 
-        return view('employees.create', compact('departments', 'missions'));
+        return view('employees.create', compact('departments', 'missions', 'nextEmployeeNo'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'employee_no' => ['required', 'string', 'max:50', 'unique:employees,employee_no'],
+            'employee_no' => ['nullable', 'string', 'max:50', 'unique:employees,employee_no'],
             'full_name' => ['required', 'string', 'max:150'],
             'department_id' => ['nullable', 'exists:departments,id'],
             'mission_id' => ['nullable', 'exists:missions,id'],
@@ -44,6 +45,8 @@ class EmployeeController extends Controller
             'employment_status' => ['nullable', 'string', 'max:50'],
             'notes' => ['nullable', 'string'],
         ]);
+
+        $data['employee_no'] = $data['employee_no'] ?: Employee::nextEmployeeNumber();
 
         Employee::create($data);
 

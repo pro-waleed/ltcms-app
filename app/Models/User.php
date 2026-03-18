@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -13,42 +12,46 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
+        'employee_id',
         'username',
         'full_name',
         'email',
         'password',
         'is_active',
+        'approval_status',
+        'approved_at',
+        'approved_by',
         'last_login_at',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'approved_at' => 'datetime',
             'last_login_at' => 'datetime',
         ];
+    }
+
+    public function isEmployeeAccount(): bool
+    {
+        return !is_null($this->employee_id);
+    }
+
+    public function isApprovedForOpportunities(): bool
+    {
+        if (!$this->isEmployeeAccount()) {
+            return true;
+        }
+
+        return $this->approval_status === 'approved';
     }
 
     public function roles()
@@ -74,5 +77,15 @@ class User extends Authenticatable
     public function statusLogs()
     {
         return $this->hasMany(StatusLog::class, 'changed_by');
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 }

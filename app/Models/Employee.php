@@ -32,6 +32,23 @@ class Employee extends Model
         'last_training_date' => 'date',
     ];
 
+    public static function nextEmployeeNumber(): string
+    {
+        $lastNumber = static::query()
+            ->where('employee_no', 'like', 'EMP-%')
+            ->orderByDesc('employee_no')
+            ->value('employee_no');
+
+        $next = 1;
+
+        if ($lastNumber) {
+            $suffix = (int) preg_replace('/\D+/', '', $lastNumber);
+            $next = max(1, $suffix + 1);
+        }
+
+        return 'EMP-' . str_pad((string) $next, 6, '0', STR_PAD_LEFT);
+    }
+
     public function department()
     {
         return $this->belongsTo(Department::class);
@@ -55,5 +72,10 @@ class Employee extends Model
     public function applicationRequests()
     {
         return $this->hasMany(ApplicationRequest::class);
+    }
+
+    public function user()
+    {
+        return $this->hasOne(User::class);
     }
 }

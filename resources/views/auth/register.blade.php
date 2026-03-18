@@ -1,28 +1,38 @@
 @extends('layouts.app')
 
-@section('title', 'إضافة موظف')
+@section('title', 'تسجيل موظف جديد')
 
 @section('content')
-    <div class="card">
-        <h3>إضافة موظف</h3>
-        <form method="post" action="{{ route('employees.store') }}" class="form">
+    <div class="card" style="max-width: 960px; margin: 0 auto;">
+        <h2>تسجيل موظف جديد</h2>
+        <p class="muted">سيتم إنشاء حسابك وربط اسم المستخدم تلقائيًا بالرقم الوظيفي التسلسلي.</p>
+
+        <form method="post" action="{{ route('register.perform') }}" class="form" style="margin-top: 20px;">
             @csrf
             <div class="grid grid-2">
                 <label>
-                    الرقم الوظيفي
-                    <input type="text" name="employee_no" value="{{ old('employee_no', $nextEmployeeNo) }}" readonly>
-                    <small>يتم توليد الرقم الوظيفي تلقائيًا بشكل تسلسلي.</small>
+                    الاسم الكامل
+                    <input type="text" name="full_name" value="{{ old('full_name') }}" required>
                 </label>
                 <label>
-                    الاسم الكامل
-                    <input type="text" name="full_name" value="{{ old('full_name') }}">
+                    البريد الإلكتروني
+                    <input type="email" name="email" value="{{ old('email') }}" required>
+                </label>
+                <label>
+                    كلمة المرور
+                    <input type="password" name="password" required>
+                    <small>8 أحرف على الأقل.</small>
+                </label>
+                <label>
+                    تأكيد كلمة المرور
+                    <input type="password" name="password_confirmation" required>
                 </label>
                 <label>
                     الإدارة
                     <select name="department_id">
                         <option value="">بدون</option>
                         @foreach($departments as $department)
-                            <option value="{{ $department->id }}">{{ $department->name }}</option>
+                            <option value="{{ $department->id }}" @selected(old('department_id') == $department->id)>{{ $department->name }}</option>
                         @endforeach
                     </select>
                 </label>
@@ -31,7 +41,7 @@
                     <select name="mission_id">
                         <option value="">بدون</option>
                         @foreach($missions as $mission)
-                            <option value="{{ $mission->id }}">{{ $mission->name }}</option>
+                            <option value="{{ $mission->id }}" @selected(old('mission_id') == $mission->id)>{{ $mission->name }}</option>
                         @endforeach
                     </select>
                 </label>
@@ -61,7 +71,7 @@
                 </label>
                 <label>
                     سنوات الخدمة
-                    <input type="number" name="years_of_service" value="{{ old('years_of_service') }}">
+                    <input type="number" name="years_of_service" min="0" value="{{ old('years_of_service') }}">
                 </label>
                 <label>
                     موقع العمل
@@ -72,13 +82,15 @@
                     <input type="text" name="employment_status" value="{{ old('employment_status') }}">
                 </label>
             </div>
+
             <label>
                 ملاحظات
                 <textarea name="notes" rows="4">{{ old('notes') }}</textarea>
             </label>
-            <div style="margin-top: 12px;">
-                <button class="btn" type="submit">حفظ</button>
-                <a class="link" href="{{ route('employees.index') }}">رجوع</a>
+
+            <div class="inline-actions" style="margin-top: 18px;">
+                <button class="btn" type="submit">إنشاء الحساب</button>
+                <a class="btn alt" href="{{ route('login') }}">لدي حساب بالفعل</a>
             </div>
         </form>
     </div>

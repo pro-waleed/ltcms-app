@@ -13,6 +13,9 @@
             --accent: #c37b31;
             --card: #ffffff;
             --border: #eadfce;
+            --success-bg: #ecfdf3;
+            --success-border: #bbf7d0;
+            --success-text: #166534;
             --shadow: 0 10px 30px rgba(15, 61, 62, 0.12);
         }
         * { box-sizing: border-box; }
@@ -32,8 +35,8 @@
         header {
             position: sticky;
             top: 0;
-            background: rgba(246, 242, 236, 0.9);
-            backdrop-filter: blur(6px);
+            background: rgba(246, 242, 236, 0.92);
+            backdrop-filter: blur(8px);
             border-bottom: 1px solid var(--border);
             z-index: 10;
         }
@@ -45,11 +48,17 @@
         .brand {
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .brand-main {
+            display: flex;
+            align-items: center;
             gap: 14px;
         }
         .logo {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             border-radius: 12px;
             background: linear-gradient(135deg, var(--brand), #2b6777);
             color: #fff;
@@ -58,11 +67,16 @@
             font-weight: 700;
             box-shadow: var(--shadow);
         }
+        .brand-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
         nav {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            margin-top: 12px;
+            margin-top: 14px;
             align-items: center;
         }
         nav a {
@@ -86,6 +100,7 @@
             gap: 18px;
         }
         .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .card {
             background: var(--card);
@@ -94,7 +109,9 @@
             padding: 18px;
             box-shadow: var(--shadow);
         }
-        .card h3 { margin: 0 0 6px; font-size: 18px; }
+        .card h2, .card h3 {
+            margin: 0 0 8px;
+        }
         .kpi {
             font-size: 26px;
             font-weight: 700;
@@ -111,20 +128,15 @@
             background: #f3e7d3;
             color: #2d2a26;
             font-weight: 700;
-            position: sticky;
-            top: 0;
-            z-index: 1;
         }
         .table th, .table td {
             text-align: right;
             padding: 12px 14px;
             border-bottom: 1px solid var(--border);
+            vertical-align: top;
         }
         .table tbody tr:nth-child(even) {
             background: #fffaf3;
-        }
-        .table tbody tr:hover {
-            background: #fff2df;
         }
         .badge {
             display: inline-block;
@@ -134,41 +146,67 @@
             background: #fef3c7;
             color: #92400e;
         }
+        .badge.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .badge.info {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
         .btn {
             display: inline-block;
-            padding: 8px 14px;
+            padding: 9px 16px;
             background: var(--brand);
             color: #fff;
             border-radius: 10px;
             text-decoration: none;
             border: none;
             cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        .btn.alt {
+            background: #fff;
+            color: var(--brand);
+            border: 1px solid var(--brand);
         }
         .link {
             color: var(--brand);
             text-decoration: none;
-            margin-inline-start: 8px;
         }
-        .link.danger { color: #b91c1c; }
         .success {
-            margin: 10px 0 0;
-            padding: 10px 12px;
-            background: #ecfdf3;
-            border: 1px solid #bbf7d0;
-            border-radius: 10px;
-            color: #166534;
+            margin: 0 0 16px;
+            padding: 12px 14px;
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            border-radius: 12px;
+            color: var(--success-text);
+        }
+        .error-box {
+            margin: 0 0 16px;
+            padding: 12px 14px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            color: #991b1b;
         }
         .form label {
             display: flex;
             flex-direction: column;
             gap: 6px;
             font-size: 14px;
+            margin-bottom: 14px;
         }
         .form input, .form select, .form textarea {
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 8px 10px;
+            padding: 10px 12px;
             font-family: inherit;
+            background: #fff;
+        }
+        .form small {
+            color: var(--muted);
         }
         .search-wrap {
             position: relative;
@@ -187,6 +225,7 @@
             outline: none;
             padding: 4px 6px;
             min-width: 180px;
+            font-family: inherit;
         }
         .search-form button {
             background: var(--accent);
@@ -195,6 +234,7 @@
             border-radius: 8px;
             padding: 6px 10px;
             cursor: pointer;
+            font-family: inherit;
         }
         .search-suggest {
             position: absolute;
@@ -229,18 +269,70 @@
             background: transparent;
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 6px 10px;
+            padding: 8px 12px;
             cursor: pointer;
+            font-family: inherit;
+        }
+        .hero {
+            display: grid;
+            grid-template-columns: 1.3fr 0.9fr;
+            gap: 20px;
+            align-items: stretch;
+            margin-bottom: 22px;
+        }
+        .hero-panel {
+            background: linear-gradient(135deg, rgba(15, 61, 62, 0.95), rgba(43, 103, 119, 0.92));
+            color: #fff;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+        }
+        .hero-panel p {
+            color: rgba(255, 255, 255, 0.86);
+        }
+        .inline-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .empty {
+            padding: 18px;
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            color: var(--muted);
+            background: #fffcf8;
         }
         @media (max-width: 980px) {
-            .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .grid-2 { grid-template-columns: 1fr; }
-            .search-form { width: 100%; }
-            .search-suggest { width: 100%; }
+            .hero {
+                grid-template-columns: 1fr;
+            }
+            .grid-4, .grid-3 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .brand {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+            .search-form, .search-suggest {
+                width: 100%;
+            }
         }
         @media (max-width: 640px) {
-            .grid-4 { grid-template-columns: 1fr; }
-            nav { gap: 8px; }
+            .container {
+                padding: 16px;
+            }
+            .grid-4, .grid-3 {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -249,46 +341,82 @@
     <header>
         <div class="container">
             <div class="brand">
-                <div class="logo">LT</div>
-                <div>
-                    <div style="font-weight: 700;">نظام إدارة التدريب والتأهيل</div>
-                    <div class="muted" style="font-size: 13px;">وزارة الخارجية وشؤون المغتربين - الجمهورية اليمنية</div>
+                <div class="brand-main">
+                    <a href="{{ route('home') }}" class="logo" style="text-decoration: none;">LT</a>
+                    <div>
+                        <div style="font-weight: 700;">نظام إدارة التدريب والتأهيل</div>
+                        <div class="muted" style="font-size: 13px;">وزارة الخارجية وشؤون المغتربين - الجمهورية اليمنية</div>
+                    </div>
+                </div>
+                <div class="brand-links">
+                    @guest
+                        <a href="{{ route('home') }}">الرئيسية</a>
+                        <a href="{{ route('login') }}">تسجيل الدخول</a>
+                        <a href="{{ route('register') }}">تسجيل موظف جديد</a>
+                    @endguest
                 </div>
             </div>
+
             @auth
-            <nav>
-                <a href="/">لوحة المتابعة</a>
-                <a href="/opportunities">الفرص التدريبية</a>
-                <a href="/nominations">الترشيحات</a>
-                <a href="/applications">طلبات المشاركة</a>
-                <a href="/employees">الموظفون</a>
-                <a href="/partners">الشركاء</a>
-                <a href="/funding">التمويل</a>
-                <a href="/departments">الإدارات</a>
-                <a href="/missions">البعثات</a>
-                <a href="/reports">التقارير</a>
-                @if(auth()->user()?->hasRole('system_admin'))
-                    <a href="/users">المستخدمون</a>
-                    <a href="/roles">الأدوار</a>
-                @endif
-                <div class="search-wrap">
-                    <form class="search-form" method="get" action="{{ route('search.index') }}" autocomplete="off">
-                        <input type="text" id="quick-search" name="q" value="{{ request('q') }}" placeholder="بحث عن موظف، فرصة، شريك">
-                        <button type="submit">بحث</button>
+                @php($isEmployeePortal = (bool) auth()->user()?->employee_id)
+                <nav>
+                    @if($isEmployeePortal)
+                        <a href="{{ route('portal.dashboard') }}">بوابة الموظف</a>
+                        <a href="{{ route('portal.opportunities') }}">الفرص المتاحة</a>
+                        <a href="{{ route('portal.applications') }}">طلباتي</a>
+                        <a href="{{ route('portal.training-history') }}">السجل التدريبي</a>
+                        <a href="{{ route('portal.profile') }}">البيانات الشخصية</a>
+                        <a href="{{ route('portal.password') }}">كلمة المرور</a>
+                    @else
+                        <a href="{{ route('dashboard') }}">لوحة المتابعة</a>
+                        <a href="{{ route('opportunities.index') }}">الفرص التدريبية</a>
+                        <a href="{{ route('nominations.index') }}">الترشيحات</a>
+                        <a href="{{ route('applications.index') }}">طلبات المشاركة</a>
+                        <a href="{{ route('employees.index') }}">الموظفون</a>
+                        <a href="{{ route('partners.index') }}">الشركاء</a>
+                        <a href="{{ route('funding.index') }}">التمويل</a>
+                        <a href="{{ route('departments.index') }}">الإدارات</a>
+                        <a href="{{ route('missions.index') }}">البعثات</a>
+                        <a href="{{ route('reports.index') }}">التقارير</a>
+                        @if(auth()->user()?->hasRole('system_admin'))
+                            <a href="{{ route('users.index') }}">المستخدمون</a>
+                            <a href="{{ route('roles.index') }}">الأدوار</a>
+                        @endif
+                        <div class="search-wrap">
+                            <form class="search-form" method="get" action="{{ route('search.index') }}" autocomplete="off">
+                                <input type="text" id="quick-search" name="q" value="{{ request('q') }}" placeholder="ابحث عن موظف أو فرصة أو شريك">
+                                <button type="submit">بحث</button>
+                            </form>
+                            <div class="search-suggest" id="search-suggest"></div>
+                        </div>
+                    @endif
+
+                    <form class="logout" method="post" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit">خروج</button>
                     </form>
-                    <div class="search-suggest" id="search-suggest"></div>
-                </div>
-                <form class="logout" method="post" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit">خروج</button>
-                </form>
-            </nav>
+                </nav>
             @endauth
         </div>
     </header>
 
     <main>
         <div class="container">
+            @if(session('status'))
+                <div class="success">{{ session('status') }}</div>
+            @endif
+
+            @if($errors->any())
+                <div class="error-box">
+                    <strong>يرجى مراجعة البيانات التالية:</strong>
+                    <ul style="margin: 8px 0 0; padding-inline-start: 20px;">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             @yield('content')
         </div>
     </main>
@@ -308,10 +436,12 @@
             box.innerHTML = '';
             return;
         }
-        box.innerHTML = items.map(item => {
+
+        box.innerHTML = items.map((item) => {
             const label = item.type === 'employee' ? 'موظف' : (item.type === 'opportunity' ? 'فرصة' : 'شريك');
             return `<a href="${item.url}">${item.label} <span class="label">${label}</span></a>`;
         }).join('');
+
         box.classList.add('active');
     };
 
@@ -321,9 +451,10 @@
             render([]);
             return;
         }
+
         fetch(`{{ route('search.suggest') }}?q=${encodeURIComponent(q)}`)
-            .then(res => res.json())
-            .then(data => render(data.results || []))
+            .then((res) => res.json())
+            .then((data) => render(data.results || []))
             .catch(() => render([]));
     };
 
@@ -332,8 +463,8 @@
         timer = setTimeout(fetchSuggestions, 250);
     });
 
-    document.addEventListener('click', (e) => {
-        if (!box.contains(e.target) && e.target !== input) {
+    document.addEventListener('click', (event) => {
+        if (!box.contains(event.target) && event.target !== input) {
             box.classList.remove('active');
         }
     });

@@ -25,13 +25,14 @@
             display: grid;
             place-items: center;
             min-height: 100vh;
+            padding: 20px;
         }
         .card {
-            width: min(420px, 92vw);
+            width: min(460px, 94vw);
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 18px;
-            padding: 24px;
+            padding: 28px;
             box-shadow: var(--shadow);
         }
         .logo {
@@ -43,51 +44,106 @@
             display: grid;
             place-items: center;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
-        label { display: block; margin-top: 12px; font-size: 14px; }
+        h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+        .muted {
+            color: var(--muted);
+            line-height: 1.8;
+        }
+        label {
+            display: block;
+            margin-top: 14px;
+            font-size: 14px;
+        }
         input {
             width: 100%;
             margin-top: 6px;
-            padding: 10px 12px;
+            padding: 11px 12px;
             border: 1px solid var(--border);
             border-radius: 10px;
             font-family: inherit;
         }
         button {
             width: 100%;
-            margin-top: 16px;
-            padding: 10px 12px;
+            margin-top: 18px;
+            padding: 11px 12px;
             background: var(--brand);
             color: #fff;
             border: none;
             border-radius: 10px;
             cursor: pointer;
+            font-family: inherit;
         }
-        .error { color: #b91c1c; margin-top: 10px; font-size: 13px; }
+        .notice {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 12px;
+            background: #ecfdf3;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            line-height: 1.8;
+        }
+        .error {
+            color: #b91c1c;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        .links {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+        .links a {
+            color: var(--brand);
+            text-decoration: none;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="logo">LT</div>
-        <h3 style="margin: 0 0 6px;">نظام إدارة التدريب والتأهيل</h3>
-        <div class="muted" style="font-size: 13px; margin-bottom: 10px;">وزارة الخارجية وشؤون المغتربين</div>
+        <h1>تسجيل الدخول</h1>
+        <div class="muted">أدخل اسم المستخدم وكلمة المرور للوصول إلى النظام أو بوابة الموظف.</div>
+
+        @if(session('registration_credentials'))
+            <div class="notice">
+                تم إنشاء حسابك بنجاح. اسم المستخدم الخاص بك هو:
+                <strong>{{ session('registration_credentials.username') }}</strong>
+            </div>
+        @endif
+
+        @if(session('status'))
+            <div class="notice">{{ session('status') }}</div>
+        @endif
 
         <form method="post" action="{{ route('login.perform') }}">
             @csrf
             <label>
                 اسم المستخدم
-                <input type="text" name="username" value="{{ old('username') }}">
+                <input type="text" name="username" value="{{ old('username') }}" autocomplete="username">
             </label>
             <label>
                 كلمة المرور
-                <input type="password" name="password">
+                <input type="password" name="password" autocomplete="current-password">
             </label>
             @error('username')
                 <div class="error">{{ $message }}</div>
             @enderror
-            <button type="submit">تسجيل الدخول</button>
+            <button type="submit">دخول</button>
         </form>
+
+        <div class="links">
+            <a href="{{ route('register') }}">تسجيل موظف جديد</a>
+            <a href="{{ route('password.request') }}">استعادة كلمة المرور</a>
+            <a href="{{ route('home') }}">العودة إلى الرئيسية</a>
+        </div>
     </div>
 </body>
 </html>

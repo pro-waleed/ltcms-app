@@ -32,6 +32,14 @@
                         <option value="0" @selected(!$user->is_active)>غير نشط</option>
                     </select>
                 </label>
+                @if($user->employee_id)
+                    <label>
+                        اعتماد التقديم
+                        <select disabled>
+                            <option>{{ $user->approval_status === 'approved' ? 'معتمد' : 'بانتظار الاعتماد' }}</option>
+                        </select>
+                    </label>
+                @endif
             </div>
             <label>
                 الأدوار

@@ -20,13 +20,56 @@
             <div class="muted">كل الترشيحات</div>
         </div>
         <div class="card">
-            <h3>المستفيدون</h3>
+            <h3>الموظفون</h3>
             <div class="kpi">{{ $stats['employees_total'] }}</div>
             <div class="muted">الموظفون المسجلون</div>
         </div>
     </div>
 
     <div class="grid grid-2" style="margin-top: 20px;">
+        <div class="card">
+            <div class="inline-actions" style="justify-content: space-between;">
+                <div>
+                    <h3>اعتمادات الموظفين</h3>
+                    <div class="muted">طلبات التسجيل التي تنتظر قرار مدير النظام.</div>
+                </div>
+                <a class="btn alt" href="{{ route('users.index', ['approval_status' => 'pending']) }}">عرض الكل</a>
+            </div>
+
+            <div style="margin: 14px 0;">
+                <span class="badge">{{ $stats['pending_employee_approvals'] }} بانتظار الاعتماد</span>
+            </div>
+
+            @if($pendingEmployees->isEmpty())
+                <div class="empty">لا توجد حسابات موظفين بانتظار الاعتماد حاليًا.</div>
+            @else
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>اسم المستخدم</th>
+                            <th>الموظف</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($pendingEmployees as $pendingUser)
+                            <tr>
+                                <td>{{ $pendingUser->username }}</td>
+                                <td>{{ $pendingUser->full_name }}</td>
+                                <td style="white-space: nowrap;">
+                                    <form action="{{ route('users.approve', $pendingUser) }}" method="post" style="display: inline;">
+                                        @csrf
+                                        <button class="link" type="submit">اعتماد</button>
+                                    </form>
+                                    <a class="link" href="{{ route('users.edit', $pendingUser) }}">مراجعة</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+
         <div class="card">
             <h3>آخر الفرص التدريبية</h3>
             <table class="table">
@@ -50,28 +93,29 @@
                 </tbody>
             </table>
         </div>
-        <div class="card">
-            <h3>آخر الترشيحات</h3>
-            <table class="table">
-                <thead>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+        <h3>آخر الترشيحات</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>المرشح</th>
+                    <th>الفرصة</th>
+                    <th>الحالة</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($latestNominations as $nomination)
                     <tr>
-                        <th>المرشح</th>
-                        <th>الفرصة</th>
-                        <th>الحالة</th>
+                        <td>{{ optional($nomination->employee)->full_name }}</td>
+                        <td>{{ optional($nomination->opportunity)->title }}</td>
+                        <td><span class="badge">{{ $nomination->status }}</span></td>
                     </tr>
-                </thead>
-                <tbody>
-                    @forelse($latestNominations as $nomination)
-                        <tr>
-                            <td>{{ optional($nomination->employee)->full_name }}</td>
-                            <td>{{ optional($nomination->opportunity)->title }}</td>
-                            <td><span class="badge">{{ $nomination->status }}</span></td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="3" class="muted">لا توجد ترشيحات حتى الآن.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                @empty
+                    <tr><td colspan="3" class="muted">لا توجد ترشيحات حتى الآن.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 @endsection
