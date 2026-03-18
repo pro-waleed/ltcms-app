@@ -52,6 +52,8 @@ Important:
 - Do not run `db:seed` automatically on every deploy.
 - The production container now runs a safe bootstrap seeder on startup to ensure roles, opportunity types, and the `admin` account exist without touching business data.
 - Full application seeding remains disabled by default.
+- The application now fails fast in production if it boots with `sqlite` instead of a persistent database such as PostgreSQL.
+- If a deploy fails after this change, review the Render environment values first and confirm the web service is bound to the persistent PostgreSQL instance.
 - If you explicitly need boot-time seeding for a fresh environment, temporarily set `SEED_CORE_DATA_ON_BOOT=true`, then return it to `false` after initial bootstrap.
 
 ## Recommended production database

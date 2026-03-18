@@ -24,6 +24,8 @@ services:
         value: "false"
       - key: DB_CONNECTION
         value: pgsql
+      - key: REQUIRE_PERSISTENT_DATABASE
+        value: "true"
       - key: DB_HOST
         fromDatabase:
           name: ltcms-db
