@@ -41,11 +41,17 @@ Run migrations in production:
 php artisan migrate --force
 ```
 
-If this is the first deployment, seed the core roles and admin user:
+If this is the first deployment only, seed the core roles and admin user once:
 
 ```bash
 php artisan db:seed --force
 ```
+
+Important:
+
+- Do not run `db:seed` automatically on every deploy.
+- The production container is now configured to run migrations on startup, but seeding is disabled by default.
+- If you explicitly need boot-time seeding for a fresh environment, temporarily set `SEED_CORE_DATA_ON_BOOT=true`, then return it to `false` after initial bootstrap.
 
 ## Recommended production database
 
@@ -101,3 +107,4 @@ docker run --rm -p 10000:10000 --env-file .env ltcms-app
 - The app currently serves through `php artisan serve` inside the container for simplicity.
 - For higher traffic production setups, move later to Nginx or Caddy with PHP-FPM.
 - Shared hosting or SQLite-only deployment is not recommended for long-term production use.
+- Production data must live in PostgreSQL, not inside the container filesystem.

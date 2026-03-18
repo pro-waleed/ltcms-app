@@ -52,10 +52,12 @@ WORKDIR /app
 COPY . .
 COPY --from=vendor /app/vendor ./vendor
 COPY --from=assets /app/public/build ./public/build
+COPY docker/entrypoint.sh /usr/local/bin/ltcms-entrypoint.sh
 
 RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+    && chmod -R 775 storage bootstrap/cache \
+    && chmod +x /usr/local/bin/ltcms-entrypoint.sh
 
 EXPOSE 10000
 
-CMD sh -c "if [ -z \"$APP_KEY\" ]; then export APP_KEY=base64:$(php -r 'echo base64_encode(random_bytes(32));'); fi && php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"
+CMD ["ltcms-entrypoint.sh"]
