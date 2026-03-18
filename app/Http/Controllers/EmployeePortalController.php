@@ -36,7 +36,9 @@ class EmployeePortalController extends Controller
             ->take(5)
             ->get();
 
-        return view('portal.dashboard', compact('employee', 'openOpportunities', 'latestApplications', 'user'));
+        $applicationStatuses = ApplicationRequest::statusLabels();
+
+        return view('portal.dashboard', compact('employee', 'openOpportunities', 'latestApplications', 'user', 'applicationStatuses'));
     }
 
     public function opportunities(Request $request)
@@ -109,7 +111,9 @@ class EmployeePortalController extends Controller
             ->orderByDesc('id')
             ->paginate(15);
 
-        return view('portal.applications', compact('applications'));
+        $applicationStatuses = ApplicationRequest::statusLabels();
+
+        return view('portal.applications', compact('applications', 'applicationStatuses'));
     }
 
     public function profile(Request $request)
