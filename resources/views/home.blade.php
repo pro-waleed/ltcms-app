@@ -3,6 +3,7 @@
 @section('title', 'بوابة التدريب والتأهيل')
 
 @section('content')
+    @php($deliveryModeLabels = \App\Models\Opportunity::deliveryModeLabels())
     <section class="hero">
         <div class="hero-panel">
             <span class="badge info" style="margin-bottom: 12px;">منصة موحدة لإدارة الترشيح والتقديم</span>
@@ -100,7 +101,7 @@
                             الجهة: {{ $opportunity->partner?->name ?? $opportunity->provider_entity ?? 'غير محددة' }}
                         </p>
                         <div class="muted">المكان: {{ $opportunity->location_country ?: 'غير محدد' }}</div>
-                        <div class="muted">النمط: {{ $opportunity->delivery_mode }}</div>
+                        <div class="muted">النمط: {{ $deliveryModeLabels[$opportunity->delivery_mode] ?? $opportunity->delivery_mode }}</div>
                         <div class="muted">المقاعد: {{ $opportunity->seats ?: 'غير محددة' }}</div>
 
                         @if($opportunity->summary)

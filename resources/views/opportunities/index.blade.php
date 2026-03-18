@@ -3,6 +3,11 @@
 @section('title', 'الفرص التدريبية')
 
 @section('content')
+    @php
+        $opportunityStatusLabels = \App\Models\Opportunity::statusLabels();
+        $deliveryModeLabels = \App\Models\Opportunity::deliveryModeLabels();
+    @endphp
+
     <div class="card" style="margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
             <div>
@@ -33,9 +38,9 @@
                         <td>{{ $opportunity->reference_no }}</td>
                         <td>{{ $opportunity->title }}</td>
                         <td>{{ optional($opportunity->type)->name }}</td>
-                        <td>{{ $opportunity->delivery_mode }}</td>
+                        <td>{{ $deliveryModeLabels[$opportunity->delivery_mode] ?? $opportunity->delivery_mode }}</td>
                         <td>{{ $opportunity->seats ?: '-' }}</td>
-                        <td><span class="badge">{{ $opportunity->status }}</span></td>
+                        <td><span class="badge">{{ $opportunityStatusLabels[$opportunity->status] ?? $opportunity->status }}</span></td>
                         <td style="white-space: nowrap;">
                             <a class="link" href="{{ route('reports.opportunity', $opportunity) }}">تفصيلي</a>
                             <a class="link" href="{{ route('reports.opportunity.decision', $opportunity) }}">محضر</a>

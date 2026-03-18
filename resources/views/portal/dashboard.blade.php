@@ -3,6 +3,7 @@
 @section('title', 'بوابة الموظف')
 
 @section('content')
+    @php($deliveryModeLabels = \App\Models\Opportunity::deliveryModeLabels())
     @if(!$user->isApprovedForOpportunities())
         <div class="panel-note">
             <strong>الحساب بانتظار الاعتماد.</strong>
@@ -89,7 +90,7 @@
                             </div>
                             <div class="muted" style="margin-top: 6px;">
                                 المقاعد: {{ $opportunity->seats ?: 'غير محددة' }} |
-                                النمط: {{ $opportunity->delivery_mode }}
+                                النمط: {{ $deliveryModeLabels[$opportunity->delivery_mode] ?? $opportunity->delivery_mode }}
                             </div>
                         </div>
                     @endforeach

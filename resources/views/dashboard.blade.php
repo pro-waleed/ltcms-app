@@ -3,6 +3,7 @@
 @section('title', 'لوحة المتابعة')
 
 @section('content')
+    @php($opportunityStatusLabels = \App\Models\Opportunity::statusLabels())
     <section class="hero">
         <div class="hero-panel">
             <span class="badge info" style="margin-bottom: 12px;">لوحة متابعة تنفيذية</span>
@@ -159,7 +160,7 @@
                             <tr>
                                 <td>{{ $opportunity->title }}</td>
                                 <td>{{ optional($opportunity->partner)->name ?? '-' }}</td>
-                                <td><span class="badge">{{ $opportunity->status }}</span></td>
+                                <td><span class="badge">{{ $opportunityStatusLabels[$opportunity->status] ?? $opportunity->status }}</span></td>
                             </tr>
                         @endforeach
                     </tbody>

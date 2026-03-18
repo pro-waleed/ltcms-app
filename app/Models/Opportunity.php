@@ -41,6 +41,31 @@ class Opportunity extends Model
         'nomination_deadline' => 'date',
     ];
 
+    public static function statusLabels(): array
+    {
+        return [
+            'draft' => 'مسودة',
+            'received' => 'واردة',
+            'under_review' => 'قيد الدراسة',
+            'open_for_nomination' => 'مفتوحة للترشيح',
+            'closed' => 'مغلقة',
+            'nominated' => 'تم الترشيح',
+            'executed' => 'منفذة',
+            'closed_no_benefit' => 'أغلقت دون استفادة',
+            'referred' => 'محالة',
+            'cancelled' => 'ملغاة',
+        ];
+    }
+
+    public static function deliveryModeLabels(): array
+    {
+        return [
+            'onsite' => 'حضوري',
+            'online' => 'أونلاين',
+            'hybrid' => 'هجين',
+        ];
+    }
+
     public function type()
     {
         return $this->belongsTo(OpportunityType::class, 'opportunity_type_id');

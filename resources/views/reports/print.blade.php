@@ -12,6 +12,11 @@
     </style>
 </head>
 <body>
+    @php
+        $opportunityStatusLabels = \App\Models\Opportunity::statusLabels();
+        $deliveryModeLabels = \App\Models\Opportunity::deliveryModeLabels();
+    @endphp
+
     <h1>تقرير الفرص التدريبية</h1>
     <table>
         <thead>
@@ -29,8 +34,8 @@
                 <tr>
                     <td>{{ $row->reference_no }}</td>
                     <td>{{ $row->title }}</td>
-                    <td>{{ $row->delivery_mode }}</td>
-                    <td>{{ $row->status }}</td>
+                    <td>{{ $deliveryModeLabels[$row->delivery_mode] ?? $row->delivery_mode }}</td>
+                    <td>{{ $opportunityStatusLabels[$row->status] ?? $row->status }}</td>
                     <td>{{ $row->start_date }}</td>
                     <td>{{ $row->end_date }}</td>
                 </tr>

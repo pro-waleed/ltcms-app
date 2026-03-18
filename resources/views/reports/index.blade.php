@@ -3,6 +3,11 @@
 @section('title', 'التقارير')
 
 @section('content')
+    @php
+        $opportunityStatusLabels = \App\Models\Opportunity::statusLabels();
+        $deliveryModeLabels = \App\Models\Opportunity::deliveryModeLabels();
+    @endphp
+
     <div class="grid grid-4" style="margin-bottom: 16px;">
         <div class="card">
             <h3>إجمالي الفرص</h3>
@@ -36,8 +41,8 @@
                     الحالة
                     <select name="status">
                         <option value="">الكل</option>
-                        @foreach(['draft','received','under_review','open_for_nomination','closed','nominated','executed','closed_no_benefit','referred','cancelled'] as $status)
-                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ $status }}</option>
+                        @foreach($opportunityStatusLabels as $status => $label)
+                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ $label }}</option>
                         @endforeach
                     </select>
                 </label>
@@ -225,8 +230,8 @@
                         <td>{{ $opportunity->reference_no }}</td>
                         <td>{{ $opportunity->title }}</td>
                         <td>{{ $opportunity->seats ?: '-' }}</td>
-                        <td>{{ $opportunity->delivery_mode }}</td>
-                        <td><span class="badge">{{ $opportunity->status }}</span></td>
+                        <td>{{ $deliveryModeLabels[$opportunity->delivery_mode] ?? $opportunity->delivery_mode }}</td>
+                        <td><span class="badge">{{ $opportunityStatusLabels[$opportunity->status] ?? $opportunity->status }}</span></td>
                         <td>{{ $opportunity->application_requests_count }}</td>
                         <td>{{ $opportunity->approved_applications_count }}</td>
                         <td>{{ $opportunity->nominations_count }}</td>
