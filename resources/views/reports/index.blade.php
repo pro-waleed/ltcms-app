@@ -9,22 +9,22 @@
             <div class="kpi">{{ $stats['opportunities_total'] }}</div>
         </div>
         <div class="card">
-            <h3>الفرص المفتوحة</h3>
-            <div class="kpi">{{ $stats['opportunities_open'] }}</div>
+            <h3>الطلبات الكلية</h3>
+            <div class="kpi">{{ $stats['applications_total'] }}</div>
         </div>
         <div class="card">
-            <h3>إجمالي الترشيحات</h3>
+            <h3>طلبات قيد المراجعة</h3>
+            <div class="kpi">{{ $stats['applications_pending'] }}</div>
+        </div>
+        <div class="card">
+            <h3>الترشيحات</h3>
             <div class="kpi">{{ $stats['nominations_total'] }}</div>
-        </div>
-        <div class="card">
-            <h3>الموظفون</h3>
-            <div class="kpi">{{ $stats['employees_total'] }}</div>
         </div>
     </div>
 
     <div class="card" style="margin-bottom: 16px;">
         <h3>التقارير والمتابعة</h3>
-        <p class="muted">تقرير الفرص التدريبية مع التصفية والتصدير.</p>
+        <p class="muted">تصفية فرص التدريب مع مؤشرات الطلبات والترشيحات والتصدير.</p>
 
         <form method="get" action="{{ route('reports.index') }}" class="form">
             <div class="grid grid-2">
@@ -58,8 +58,8 @@
         </form>
 
         <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
-            <a class="btn" href="{{ route('reports.export.csv', request()->query()) }}">تصدير CSV (Excel)</a>
-            <a class="btn" href="{{ route('reports.print', request()->query()) }}">نسخة للطباعة</a>
+            <a class="btn" href="{{ route('reports.export.csv', request()->query()) }}">تصدير CSV</a>
+            <a class="btn alt" href="{{ route('reports.print', request()->query()) }}">نسخة للطباعة</a>
             <form method="post" action="{{ route('reports.sync') }}" style="margin: 0;">
                 @csrf
                 <button class="btn" type="submit">تحديث السجل التدريبي</button>
@@ -159,7 +159,7 @@
 
     <div class="grid grid-2" style="margin-bottom: 16px;">
         <div class="card">
-            <h3>توزيع الفرص حسب الإدارات</h3>
+            <h3>توزيع الترشيحات حسب الإدارات</h3>
             <table class="table">
                 <thead>
                     <tr>
@@ -180,7 +180,7 @@
             </table>
         </div>
         <div class="card">
-            <h3>توزيع الفرص حسب البعثات</h3>
+            <h3>توزيع الترشيحات حسب البعثات</h3>
             <table class="table">
                 <thead>
                     <tr>
@@ -210,8 +210,9 @@
                     <th>العنوان</th>
                     <th>النمط</th>
                     <th>الحالة</th>
-                    <th>البداية</th>
-                    <th>النهاية</th>
+                    <th>عدد الطلبات</th>
+                    <th>الطلبات المقبولة</th>
+                    <th>الترشيحات</th>
                     <th>تقرير تفصيلي</th>
                 </tr>
             </thead>
@@ -222,12 +223,13 @@
                         <td>{{ $opportunity->title }}</td>
                         <td>{{ $opportunity->delivery_mode }}</td>
                         <td><span class="badge">{{ $opportunity->status }}</span></td>
-                        <td>{{ $opportunity->start_date }}</td>
-                        <td>{{ $opportunity->end_date }}</td>
+                        <td>{{ $opportunity->application_requests_count }}</td>
+                        <td>{{ $opportunity->approved_applications_count }}</td>
+                        <td>{{ $opportunity->nominations_count }}</td>
                         <td><a class="link" href="{{ route('reports.opportunity', $opportunity) }}">عرض</a></td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="muted">لا توجد بيانات للعرض.</td></tr>
+                    <tr><td colspan="8" class="muted">لا توجد بيانات للعرض.</td></tr>
                 @endforelse
             </tbody>
         </table>

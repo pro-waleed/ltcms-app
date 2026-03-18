@@ -6,9 +6,28 @@
     <div class="card" style="margin-bottom: 16px;">
         <h3>تقرير الفرصة: {{ $opportunity->title }}</h3>
         <p class="muted">رقم الفرصة: {{ $opportunity->reference_no }}</p>
-        <div style="margin-top: 12px;">
+        <div class="inline-actions" style="margin-top: 12px;">
             <a class="btn" href="{{ route('reports.opportunity.print', $opportunity) }}?reasons=1">طباعة مع المبررات</a>
-            <a class="btn" href="{{ route('reports.opportunity.print', $opportunity) }}?reasons=0" style="margin-inline-start: 8px;">طباعة بدون المبررات</a>
+            <a class="btn alt" href="{{ route('reports.opportunity.print', $opportunity) }}?reasons=0">طباعة بدون المبررات</a>
+        </div>
+    </div>
+
+    <div class="grid grid-4" style="margin-bottom: 16px;">
+        <div class="card">
+            <h3>إجمالي الطلبات</h3>
+            <div class="kpi">{{ $summary['applications_total'] }}</div>
+        </div>
+        <div class="card">
+            <h3>طلبات قيد المتابعة</h3>
+            <div class="kpi">{{ $summary['applications_pending'] }}</div>
+        </div>
+        <div class="card">
+            <h3>طلبات مقبولة</h3>
+            <div class="kpi">{{ $summary['applications_approved'] }}</div>
+        </div>
+        <div class="card">
+            <h3>ترشيحات منشأة</h3>
+            <div class="kpi">{{ $summary['nominations_total'] }}</div>
         </div>
     </div>
 
@@ -17,19 +36,29 @@
             <thead>
                 <tr>
                     <th>المتقدم</th>
-                    <th>الحالة</th>
+                    <th>الإدارة</th>
+                    <th>حالة الطلب</th>
+                    <th>حالة الترشيح</th>
                     <th>مبرر القرار</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($nominations as $nomination)
+                @forelse($applications as $application)
                     <tr>
-                        <td>{{ optional($nomination->employee)->full_name }}</td>
-                        <td>{{ $nomination->status }}</td>
-                        <td>{{ $nomination->nomination_reason }}</td>
+                        <td>{{ optional($application->employee)->full_name }}</td>
+                        <td>{{ optional(optional($application->employee)->department)->name ?? '-' }}</td>
+                        <td><span class="badge">{{ \App\Models\ApplicationRequest::statusLabels()[$application->status] ?? $application->status }}</span></td>
+                        <td>
+                            @if($application->nomination)
+                                <span class="badge info">{{ \App\Models\Nomination::statusLabels()[$application->nomination->status] ?? $application->nomination->status }}</span>
+                            @else
+                                <span class="muted">غير منشأ</span>
+                            @endif
+                        </td>
+                        <td>{{ $application->decision_reason ?: '-' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="3" class="muted">لا يوجد متقدمون لهذه الفرصة.</td></tr>
+                    <tr><td colspan="5" class="muted">لا يوجد متقدمون لهذه الفرصة.</td></tr>
                 @endforelse
             </tbody>
         </table>

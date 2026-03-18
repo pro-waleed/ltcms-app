@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ApplicationRequest;
 use App\Models\Employee;
 use App\Models\Nomination;
 use App\Models\Opportunity;
@@ -14,7 +15,12 @@ class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        $base = Opportunity::with(['type', 'partner']);
+        $base = Opportunity::with(['type', 'partner'])
+            ->withCount([
+                'applicationRequests',
+                'applicationRequests as approved_applications_count' => fn ($query) => $query->where('status', 'approved'),
+                'nominations',
+            ]);
 
         if ($request->filled('year')) {
             $base->whereYear('start_date', (int) $request->input('year'));
@@ -33,6 +39,9 @@ class ReportController extends Controller
         $stats = [
             'opportunities_total' => Opportunity::count(),
             'opportunities_open' => Opportunity::where('status', 'open_for_nomination')->count(),
+            'applications_total' => ApplicationRequest::count(),
+            'applications_pending' => ApplicationRequest::whereIn('status', ['submitted', 'under_review'])->count(),
+            'applications_approved' => ApplicationRequest::where('status', 'approved')->count(),
             'nominations_total' => Nomination::count(),
             'employees_total' => Employee::count(),
         ];
@@ -90,7 +99,12 @@ class ReportController extends Controller
 
     public function exportCsv(Request $request)
     {
-        $query = Opportunity::with('type');
+        $query = Opportunity::with('type')
+            ->withCount([
+                'applicationRequests',
+                'applicationRequests as approved_applications_count' => fn ($base) => $base->where('status', 'approved'),
+                'nominations',
+            ]);
 
         if ($request->filled('year')) {
             $query->whereYear('start_date', (int) $request->input('year'));
@@ -114,7 +128,7 @@ class ReportController extends Controller
         $callback = function () use ($rows) {
             $output = fopen('php://output', 'w');
             fwrite($output, "\xEF\xBB\xBF");
-            fputcsv($output, ['Reference', 'Title', 'Type', 'Mode', 'Status', 'Start Date', 'End Date']);
+            fputcsv($output, ['Reference', 'Title', 'Type', 'Mode', 'Status', 'Applications', 'Approved Applications', 'Nominations']);
             foreach ($rows as $row) {
                 fputcsv($output, [
                     $row->reference_no,
@@ -122,8 +136,9 @@ class ReportController extends Controller
                     optional($row->type)->name,
                     $row->delivery_mode,
                     $row->status,
-                    $row->start_date,
-                    $row->end_date,
+                    $row->application_requests_count,
+                    $row->approved_applications_count,
+                    $row->nominations_count,
                 ]);
             }
             fclose($output);
@@ -134,7 +149,10 @@ class ReportController extends Controller
 
     public function print(Request $request)
     {
-        $query = Opportunity::query();
+        $query = Opportunity::query()->withCount([
+            'applicationRequests',
+            'nominations',
+        ]);
 
         if ($request->filled('year')) {
             $query->whereYear('start_date', (int) $request->input('year'));
@@ -176,22 +194,30 @@ class ReportController extends Controller
 
     public function opportunityReport(Opportunity $opportunity)
     {
-        $nominations = Nomination::with(['employee'])
+        $applications = ApplicationRequest::with(['employee.department', 'nomination'])
             ->where('opportunity_id', $opportunity->id)
             ->orderByDesc('id')
             ->get();
 
-        return view('reports.opportunity', compact('opportunity', 'nominations'));
+        $summary = [
+            'applications_total' => $applications->count(),
+            'applications_pending' => $applications->whereIn('status', ['submitted', 'under_review'])->count(),
+            'applications_approved' => $applications->where('status', 'approved')->count(),
+            'applications_rejected' => $applications->where('status', 'rejected')->count(),
+            'nominations_total' => $applications->filter(fn ($application) => $application->nomination)->count(),
+        ];
+
+        return view('reports.opportunity', compact('opportunity', 'applications', 'summary'));
     }
 
     public function opportunityPrint(Opportunity $opportunity, Request $request)
     {
-        $nominations = Nomination::with(['employee'])
+        $applications = ApplicationRequest::with(['employee', 'nomination'])
             ->where('opportunity_id', $opportunity->id)
             ->orderByDesc('id')
             ->get();
         $withReasons = $request->boolean('reasons', true);
 
-        return view('reports.opportunity_print', compact('opportunity', 'nominations', 'withReasons'));
+        return view('reports.opportunity_print', compact('opportunity', 'applications', 'withReasons'));
     }
 }

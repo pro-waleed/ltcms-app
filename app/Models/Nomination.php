@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Nomination extends Model
 {
@@ -13,6 +14,7 @@ class Nomination extends Model
         'nomination_no',
         'opportunity_id',
         'employee_id',
+        'application_request_id',
         'external_entity_id',
         'nominated_by_department_id',
         'nomination_date',
@@ -34,6 +36,39 @@ class Nomination extends Model
         'certificate_received' => 'boolean',
     ];
 
+    public static function statusLabels(): array
+    {
+        return [
+            'nominated' => 'مرشح',
+            'under_review' => 'قيد المراجعة',
+            'approved' => 'معتمد',
+            'reserve' => 'احتياطي',
+            'rejected' => 'مرفوض',
+            'declined' => 'معتذر',
+            'attended' => 'شارك',
+            'not_attended' => 'لم يشارك',
+            'completed' => 'مكتمل',
+            'closed' => 'مغلق',
+        ];
+    }
+
+    public static function nextNumber(): string
+    {
+        $year = date('Y');
+        $prefix = "NOM-$year-";
+        $last = static::where('nomination_no', 'like', $prefix . '%')
+            ->orderByDesc('nomination_no')
+            ->first();
+
+        $nextNumber = 1;
+        if ($last) {
+            $suffix = Str::after($last->nomination_no, $prefix);
+            $nextNumber = max(1, intval($suffix) + 1);
+        }
+
+        return $prefix . str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
+    }
+
     public function opportunity()
     {
         return $this->belongsTo(Opportunity::class);
@@ -42,6 +77,11 @@ class Nomination extends Model
     public function employee()
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function applicationRequest()
+    {
+        return $this->belongsTo(ApplicationRequest::class, 'application_request_id');
     }
 
     public function externalEntity()

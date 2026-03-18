@@ -22,6 +22,17 @@ class ApplicationRequest extends Model
         'request_date' => 'date',
     ];
 
+    public static function statusLabels(): array
+    {
+        return [
+            'submitted' => 'مقدم',
+            'under_review' => 'قيد المراجعة',
+            'approved' => 'مقبول',
+            'rejected' => 'مرفوض',
+            'withdrawn' => 'منسحب',
+        ];
+    }
+
     public function opportunity()
     {
         return $this->belongsTo(Opportunity::class);
@@ -30,5 +41,10 @@ class ApplicationRequest extends Model
     public function employee()
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function nomination()
+    {
+        return $this->hasOne(Nomination::class, 'application_request_id');
     }
 }

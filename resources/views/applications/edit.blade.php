@@ -11,8 +11,7 @@
             <div class="grid grid-2">
                 <label>
                     الموظف
-                    <select name="employee_id">
-                        <option value="">—</option>
+                    <select name="employee_id" required>
                         @foreach($employees as $employee)
                             <option value="{{ $employee->id }}" @selected(old('employee_id', $application->employee_id) == $employee->id)>
                                 {{ $employee->full_name }} ({{ $employee->employee_no }})
@@ -35,7 +34,7 @@
                     <input type="date" name="request_date" value="{{ old('request_date', optional($application->request_date)->format('Y-m-d')) }}">
                 </label>
                 <label>
-                    الحالة
+                    حالة الطلب
                     <select name="status" required>
                         @foreach($statuses as $key => $label)
                             <option value="{{ $key }}" @selected(old('status', $application->status) === $key)>{{ $label }}</option>
@@ -43,6 +42,13 @@
                     </select>
                 </label>
             </div>
+
+            @if($application->nomination)
+                <div class="card" style="margin-top: 14px; box-shadow: none;">
+                    <strong>الترشيح المرتبط:</strong>
+                    <span class="badge info">{{ \App\Models\Nomination::statusLabels()[$application->nomination->status] ?? $application->nomination->status }}</span>
+                </div>
+            @endif
 
             <label style="margin-top: 12px;">
                 مبرر القرار

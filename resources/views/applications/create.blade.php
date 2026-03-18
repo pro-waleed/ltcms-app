@@ -10,8 +10,8 @@
             <div class="grid grid-2">
                 <label>
                     الموظف
-                    <select name="employee_id">
-                        <option value="">—</option>
+                    <select name="employee_id" required>
+                        <option value="">اختر الموظف</option>
                         @foreach($employees as $employee)
                             <option value="{{ $employee->id }}" @selected(old('employee_id') == $employee->id)>
                                 {{ $employee->full_name }} ({{ $employee->employee_no }})
@@ -35,7 +35,7 @@
                     <input type="date" name="request_date" value="{{ old('request_date') }}">
                 </label>
                 <label>
-                    الحالة
+                    حالة الطلب
                     <select name="status" required>
                         @foreach($statuses as $key => $label)
                             <option value="{{ $key }}" @selected(old('status', 'submitted') === $key)>{{ $label }}</option>

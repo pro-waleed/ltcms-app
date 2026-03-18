@@ -19,24 +19,26 @@
         <thead>
             <tr>
                 <th>المتقدم</th>
-                <th>الحالة</th>
+                <th>حالة الطلب</th>
+                <th>حالة الترشيح</th>
                 @if($withReasons)
                     <th>مبرر القرار</th>
                 @endif
             </tr>
         </thead>
         <tbody>
-            @forelse($nominations as $nomination)
+            @forelse($applications as $application)
                 <tr>
-                    <td>{{ optional($nomination->employee)->full_name }}</td>
-                    <td>{{ $nomination->status }}</td>
+                    <td>{{ optional($application->employee)->full_name }}</td>
+                    <td>{{ \App\Models\ApplicationRequest::statusLabels()[$application->status] ?? $application->status }}</td>
+                    <td>{{ $application->nomination ? (\App\Models\Nomination::statusLabels()[$application->nomination->status] ?? $application->nomination->status) : 'غير منشأ' }}</td>
                     @if($withReasons)
-                        <td>{{ $nomination->nomination_reason }}</td>
+                        <td>{{ $application->decision_reason }}</td>
                     @endif
                 </tr>
             @empty
                 <tr>
-                    <td colspan="{{ $withReasons ? 3 : 2 }}">لا يوجد متقدمون لهذه الفرصة.</td>
+                    <td colspan="{{ $withReasons ? 4 : 3 }}">لا يوجد متقدمون لهذه الفرصة.</td>
                 </tr>
             @endforelse
         </tbody>

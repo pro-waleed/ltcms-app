@@ -7,13 +7,10 @@
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
             <div>
                 <h3 style="margin: 0;">إدارة المتقدمين حسب الفرصة</h3>
-                <p class="muted">اختر فرصة لعرض جميع المتقدمين وتحديث حالتهم ومبررات القرار.</p>
+                <p class="muted">اختر فرصة لعرض كل المتقدمين وحالة الطلب والترشيح في شاشة واحدة.</p>
             </div>
             <a class="link" href="{{ route('nominations.index') }}">رجوع إلى الترشيحات</a>
         </div>
-        @if(session('status'))
-            <p class="success">{{ session('status') }}</p>
-        @endif
     </div>
 
     <div class="card" style="margin-bottom: 16px;">
@@ -49,27 +46,41 @@
                     <thead>
                         <tr>
                             <th>المتقدم</th>
-                            <th>الحالة</th>
+                            <th>الإدارة</th>
+                            <th>حالة الطلب</th>
+                            <th>حالة الترشيح</th>
                             <th>مبرر القرار</th>
+                            <th>ملاحظات</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($nominations as $nomination)
+                        @forelse($applications as $application)
                             <tr>
-                                <td>{{ optional($nomination->employee)->full_name }}</td>
+                                <td>{{ optional($application->employee)->full_name }}</td>
+                                <td>{{ optional(optional($application->employee)->department)->name ?? '-' }}</td>
                                 <td>
-                                    <select name="status[{{ $nomination->id }}]">
-                                        @foreach(['nominated' => 'مرشح','under_review' => 'قيد المراجعة','approved' => 'معتمد','reserve' => 'احتياطي','rejected' => 'مرفوض','declined' => 'معتذر','attended' => 'شارك','not_attended' => 'لم يشارك','completed' => 'مكتمل','closed' => 'مغلق'] as $key => $label)
-                                            <option value="{{ $key }}" @selected($nomination->status === $key)>{{ $label }}</option>
+                                    <select name="application_status[{{ $application->id }}]">
+                                        @foreach($applicationStatuses as $key => $label)
+                                            <option value="{{ $key }}" @selected($application->status === $key)>{{ $label }}</option>
                                         @endforeach
                                     </select>
                                 </td>
                                 <td>
-                                    <textarea name="nomination_reason[{{ $nomination->id }}]" rows="2">{{ $nomination->nomination_reason }}</textarea>
+                                    @if($application->nomination)
+                                        <span class="badge info">{{ $nominationStatuses[$application->nomination->status] ?? $application->nomination->status }}</span>
+                                    @else
+                                        <span class="muted">سيُنشأ عند القبول</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <textarea name="decision_reason[{{ $application->id }}]" rows="2">{{ $application->decision_reason }}</textarea>
+                                </td>
+                                <td>
+                                    <textarea name="notes[{{ $application->id }}]" rows="2">{{ $application->notes }}</textarea>
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="3" class="muted">لا يوجد متقدمون لهذه الفرصة.</td></tr>
+                            <tr><td colspan="6" class="muted">لا يوجد متقدمون لهذه الفرصة.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

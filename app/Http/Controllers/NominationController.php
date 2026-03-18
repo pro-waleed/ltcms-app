@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ApplicationRequest;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Mission;
@@ -9,13 +10,12 @@ use App\Models\Nomination;
 use App\Models\Opportunity;
 use App\Models\OpportunityType;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class NominationController extends Controller
 {
     public function index()
     {
-        $nominations = Nomination::with(['opportunity', 'employee', 'nominatedByDepartment'])
+        $nominations = Nomination::with(['opportunity', 'employee', 'applicationRequest', 'nominatedByDepartment'])
             ->orderByDesc('id')
             ->paginate(25);
 
@@ -44,7 +44,7 @@ class NominationController extends Controller
             'nomination_reason' => ['nullable', 'string'],
         ]);
 
-        $data['nomination_no'] = $this->nextNominationNumber();
+        $data['nomination_no'] = Nomination::nextNumber();
 
         Nomination::create($data);
 
@@ -84,45 +84,62 @@ class NominationController extends Controller
     {
         $opportunities = Opportunity::orderByDesc('id')->get();
         $selectedOpportunity = null;
-        $nominations = collect();
+        $applications = collect();
+        $applicationStatuses = ApplicationRequest::statusLabels();
+        $nominationStatuses = Nomination::statusLabels();
 
         if ($request->filled('opportunity_id')) {
             $selectedOpportunity = Opportunity::findOrFail($request->input('opportunity_id'));
-            $nominations = Nomination::with(['employee'])
+            $applications = ApplicationRequest::with(['employee.department', 'nomination'])
                 ->where('opportunity_id', $selectedOpportunity->id)
                 ->orderByDesc('id')
                 ->get();
         }
 
-        return view('nominations.by_opportunity', compact('opportunities', 'selectedOpportunity', 'nominations'));
+        return view('nominations.by_opportunity', compact(
+            'opportunities',
+            'selectedOpportunity',
+            'applications',
+            'applicationStatuses',
+            'nominationStatuses'
+        ));
     }
 
     public function updateByOpportunity(Request $request)
     {
         $data = $request->validate([
             'opportunity_id' => ['required', 'exists:opportunities,id'],
-            'status' => ['array'],
-            'status.*' => ['nullable', 'in:nominated,under_review,approved,reserve,rejected,declined,attended,not_attended,completed,closed'],
-            'nomination_reason' => ['array'],
-            'nomination_reason.*' => ['nullable', 'string'],
+            'application_status' => ['array'],
+            'application_status.*' => ['nullable', 'in:submitted,under_review,approved,rejected,withdrawn'],
+            'decision_reason' => ['array'],
+            'decision_reason.*' => ['nullable', 'string'],
+            'notes' => ['array'],
+            'notes.*' => ['nullable', 'string'],
         ]);
 
         $opportunityId = (int) $data['opportunity_id'];
-        $status = $data['status'] ?? [];
-        $reasons = $data['nomination_reason'] ?? [];
+        $statuses = $data['application_status'] ?? [];
+        $reasons = $data['decision_reason'] ?? [];
+        $notes = $data['notes'] ?? [];
 
-        $nominations = Nomination::where('opportunity_id', $opportunityId)->get();
-        foreach ($nominations as $nomination) {
-            $id = $nomination->id;
+        $applications = ApplicationRequest::where('opportunity_id', $opportunityId)->get();
+        foreach ($applications as $application) {
+            $id = $application->id;
             $updates = [];
-            if (array_key_exists($id, $status) && $status[$id] !== null && $status[$id] !== '') {
-                $updates['status'] = $status[$id];
+
+            if (array_key_exists($id, $statuses) && $statuses[$id] !== null && $statuses[$id] !== '') {
+                $updates['status'] = $statuses[$id];
             }
             if (array_key_exists($id, $reasons)) {
-                $updates['nomination_reason'] = $reasons[$id];
+                $updates['decision_reason'] = $reasons[$id];
             }
+            if (array_key_exists($id, $notes)) {
+                $updates['notes'] = $notes[$id];
+            }
+
             if (!empty($updates)) {
-                $nomination->update($updates);
+                $application->update($updates);
+                $this->syncNominationFromApplication($application->fresh(['employee']));
             }
         }
 
@@ -198,29 +215,10 @@ class NominationController extends Controller
             $departmentName = trim((string) ($payload['department'] ?? ''));
             $missionName = trim((string) ($payload['mission'] ?? ''));
             $jobTitle = trim((string) ($payload['job_title'] ?? ''));
-
             $opportunityTitle = trim((string) ($payload['opportunity_title'] ?? ''));
             $opportunityReference = trim((string) ($payload['opportunity_reference'] ?? ''));
             $nominationDate = trim((string) ($payload['nomination_date'] ?? ''));
-            $statusRaw = trim((string) ($payload['status'] ?? 'nominated'));
-            $statusMap = [
-                'مرشح' => 'nominated',
-                'قيد المراجعة' => 'under_review',
-                'معتمد' => 'approved',
-                'احتياطي' => 'reserve',
-                'مرفوض' => 'rejected',
-                'معتذر' => 'declined',
-                'شارك' => 'attended',
-                'لم يشارك' => 'not_attended',
-                'مكتمل' => 'completed',
-                'مغلق' => 'closed',
-            ];
-            $statusKey = mb_strtolower($statusRaw);
-            $status = $statusMap[$statusRaw] ?? $statusMap[$statusKey] ?? $statusKey;
-            $allowedStatuses = ['nominated','under_review','approved','reserve','rejected','declined','attended','not_attended','completed','closed'];
-            if ($status === '' || !in_array($status, $allowedStatuses, true)) {
-                $status = 'nominated';
-            }
+            $status = trim((string) ($payload['status'] ?? 'nominated'));
             $reason = trim((string) ($payload['nomination_reason'] ?? ''));
             $notes = trim((string) ($payload['notes'] ?? ''));
 
@@ -228,24 +226,17 @@ class NominationController extends Controller
                 continue;
             }
 
-            $department = null;
-            if ($departmentName !== '') {
-                $department = Department::firstOrCreate(['name' => $departmentName]);
-            }
-
-            $mission = null;
-            if ($missionName !== '') {
-                $mission = Mission::firstOrCreate(['name' => $missionName]);
-            }
+            $department = $departmentName !== '' ? Department::firstOrCreate(['name' => $departmentName]) : null;
+            $mission = $missionName !== '' ? Mission::firstOrCreate(['name' => $missionName]) : null;
 
             $employee = Employee::query()
-                ->when($employeeNo !== '', fn ($q) => $q->where('employee_no', $employeeNo))
-                ->when($employeeNo === '', fn ($q) => $q->where('full_name', $fullName))
+                ->when($employeeNo !== '', fn ($query) => $query->where('employee_no', $employeeNo))
+                ->when($employeeNo === '', fn ($query) => $query->where('full_name', $fullName))
                 ->first();
 
             if (!$employee) {
                 $employee = Employee::create([
-                    'employee_no' => $employeeNo !== '' ? $employeeNo : $this->generateEmployeeNo(),
+                    'employee_no' => $employeeNo !== '' ? $employeeNo : Employee::nextEmployeeNumber(),
                     'full_name' => $fullName,
                     'department_id' => $department?->id,
                     'mission_id' => $mission?->id,
@@ -253,19 +244,9 @@ class NominationController extends Controller
                 ]);
             }
 
-            if ($department && !$employee->department_id) {
-                $employee->update(['department_id' => $department->id]);
-            }
-            if ($mission && !$employee->mission_id) {
-                $employee->update(['mission_id' => $mission->id]);
-            }
-            if ($jobTitle !== '' && !$employee->job_title) {
-                $employee->update(['job_title' => $jobTitle]);
-            }
-
             $opportunity = Opportunity::query()
-                ->when($opportunityReference !== '', fn ($q) => $q->where('reference_no', $opportunityReference))
-                ->when($opportunityReference === '', fn ($q) => $q->where('title', $opportunityTitle))
+                ->when($opportunityReference !== '', fn ($query) => $query->where('reference_no', $opportunityReference))
+                ->when($opportunityReference === '', fn ($query) => $query->where('title', $opportunityTitle))
                 ->first();
 
             if (!$opportunity) {
@@ -286,7 +267,7 @@ class NominationController extends Controller
             ]);
 
             if (!$nomination->exists) {
-                $nomination->nomination_no = $this->nextNominationNumber();
+                $nomination->nomination_no = Nomination::nextNumber();
             }
 
             $nomination->nomination_date = $nominationDate !== '' ? $nominationDate : $nomination->nomination_date;
@@ -312,29 +293,45 @@ class NominationController extends Controller
             ->with('status', 'تم إغلاق الترشيح');
     }
 
-    private function nextNominationNumber(): string
+    private function syncNominationFromApplication(ApplicationRequest $application): void
     {
-        $year = date('Y');
-        $prefix = "NOM-$year-";
-        $last = Nomination::where('nomination_no', 'like', $prefix . '%')
-            ->orderByDesc('nomination_no')
-            ->first();
+        $nomination = Nomination::firstOrNew([
+            'application_request_id' => $application->id,
+        ]);
 
-        $nextNumber = 1;
-        if ($last) {
-            $suffix = Str::after($last->nomination_no, $prefix);
-            $nextNumber = max(1, intval($suffix) + 1);
+        if ($application->status === 'approved') {
+            if (!$nomination->exists) {
+                $nomination->nomination_no = Nomination::nextNumber();
+            }
+
+            $nomination->fill([
+                'opportunity_id' => $application->opportunity_id,
+                'employee_id' => $application->employee_id,
+                'nominated_by_department_id' => $application->employee?->department_id,
+                'nomination_date' => $application->request_date ?? now()->toDateString(),
+                'nomination_type' => 'application',
+                'status' => 'nominated',
+                'nomination_reason' => $application->decision_reason,
+                'notes' => $application->notes,
+            ]);
+
+            $nomination->save();
+            return;
         }
 
-        return $prefix . str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
-    }
+        if (!$nomination->exists) {
+            return;
+        }
 
-    private function generateEmployeeNo(): string
-    {
-        do {
-            $candidate = 'EMP-' . date('Ymd') . '-' . str_pad((string) rand(1, 9999), 4, '0', STR_PAD_LEFT);
-        } while (Employee::where('employee_no', $candidate)->exists());
-
-        return $candidate;
+        $nomination->update([
+            'status' => match ($application->status) {
+                'under_review' => 'under_review',
+                'rejected' => 'rejected',
+                'withdrawn' => 'declined',
+                default => 'under_review',
+            },
+            'nomination_reason' => $application->decision_reason,
+            'notes' => $application->notes,
+        ]);
     }
 }
