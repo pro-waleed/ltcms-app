@@ -203,7 +203,23 @@ class ReportController extends Controller
         $primaryCount = $applications->filter(fn ($application) => optional($application->nomination)->selection_category === 'primary')->count();
         $reserveCount = $applications->filter(fn ($application) => optional($application->nomination)->selection_category === 'reserve')->count();
         $rejectedCount = $applications->where('status', 'rejected')->count();
+        $approvedUnassignedCount = $applications->filter(function ($application) {
+            return $application->status === 'approved'
+                && $application->nomination
+                && empty($application->nomination->selection_category);
+        })->count();
         $seats = $opportunity->seats ?: 0;
+
+        $decisionLabel = 'مكتمل';
+        if ($approvedUnassignedCount > 0) {
+            $decisionLabel = 'توجد طلبات مقبولة بانتظار التصنيف النهائي';
+        } elseif ($applications->whereIn('status', ['submitted', 'under_review'])->count() > 0) {
+            $decisionLabel = 'توجد طلبات ما زالت قيد المراجعة';
+        } elseif ($seats > 0 && $primaryCount < $seats) {
+            $decisionLabel = 'عدد المرشحين الأساسيين أقل من المقاعد المتاحة';
+        } elseif ($seats > 0 && $primaryCount > $seats) {
+            $decisionLabel = 'عدد المرشحين الأساسيين يتجاوز المقاعد المتاحة';
+        }
 
         $summary = [
             'applications_total' => $applications->count(),
@@ -214,9 +230,11 @@ class ReportController extends Controller
             'primary_count' => $primaryCount,
             'reserve_count' => $reserveCount,
             'rejected_count' => $rejectedCount,
+            'approved_unassigned_count' => $approvedUnassignedCount,
             'seats' => $seats,
             'seat_gap' => max(0, $seats - $primaryCount),
             'seat_surplus' => max(0, $primaryCount - $seats),
+            'decision_label' => $decisionLabel,
         ];
 
         return view('reports.opportunity', compact('opportunity', 'applications', 'summary'));

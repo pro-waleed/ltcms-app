@@ -4,14 +4,31 @@
 
 @section('content')
     <div class="card" style="margin-bottom: 16px;">
-        <h3>تقرير الفرصة: {{ $opportunity->title }}</h3>
-        <p class="muted">رقم الفرصة: {{ $opportunity->reference_no }}</p>
-        <div class="inline-actions" style="margin-top: 12px;">
-            <a class="btn" href="{{ route('reports.opportunity.print', $opportunity) }}?reasons=1">طباعة مع المبررات</a>
-            <a class="btn alt" href="{{ route('reports.opportunity.print', $opportunity) }}?reasons=0">طباعة بدون المبررات</a>
-            <a class="btn alt" href="{{ route('reports.opportunity.decision', $opportunity) }}">محضر القرار</a>
+        <div class="section-head">
+            <div>
+                <h3>تقرير الفرصة: {{ $opportunity->title }}</h3>
+                <p class="muted">رقم الفرصة: {{ $opportunity->reference_no }}</p>
+            </div>
+            <div class="inline-actions">
+                <a class="btn" href="{{ route('reports.opportunity.print', $opportunity) }}?reasons=1">طباعة مع المبررات</a>
+                <a class="btn alt" href="{{ route('reports.opportunity.print', $opportunity) }}?reasons=0">طباعة بدون المبررات</a>
+                <a class="btn alt" href="{{ route('reports.opportunity.decision', $opportunity) }}">محضر القرار</a>
+            </div>
+        </div>
+        <div class="panel-note">
+            <strong>حالة القرار الحالية:</strong> {{ $summary['decision_label'] }}
         </div>
     </div>
+
+    @if($summary['approved_unassigned_count'] > 0)
+        <div class="card" style="margin-bottom: 16px; border-color: #fcd34d; background: #fffaf0;">
+            <h3 style="color: #92400e;">تنبيه مهم</h3>
+            <p class="muted" style="margin: 0; line-height: 1.9;">
+                يوجد <strong>{{ $summary['approved_unassigned_count'] }}</strong> طلب/طلبات مقبولة، لكن لم يتم حتى الآن تصنيفها كأساسي أو احتياطي.
+                لذلك قد يظهر عدد الطلبات المقبولة أعلى من عدد المرشحين الأساسيين.
+            </p>
+        </div>
+    @endif
 
     <div class="grid grid-4" style="margin-bottom: 16px;">
         <div class="card">
@@ -46,8 +63,22 @@
             <div class="kpi">{{ $summary['reserve_count'] }}</div>
         </div>
         <div class="card">
+            <h3>مقبول بانتظار التصنيف</h3>
+            <div class="kpi">{{ $summary['approved_unassigned_count'] }}</div>
+        </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-bottom: 16px;">
+        <div class="card">
             <h3>فجوة المقاعد</h3>
             <div class="kpi">{{ $summary['seat_gap'] ?: 0 }}</div>
+            <div class="muted">تحسب مقابل المرشحين الأساسيين المعينين فعليًا فقط.</div>
+        </div>
+        <div class="card">
+            <h3>ملاحظات القرار</h3>
+            <p class="muted" style="margin: 0; line-height: 1.9;">
+                إذا كان هناك طلبات مقبولة دون تصنيف، فهذا يعني أن القرار لم يكتمل بعد حتى لو وُجدت طلبات مقبولة.
+            </p>
         </div>
     </div>
 
@@ -57,9 +88,10 @@
             عدد المقاعد المعتمدة: <strong>{{ $summary['seats'] ?: 'غير محدد' }}</strong>،
             المرشحون الأساسيون: <strong>{{ $summary['primary_count'] }}</strong>،
             الاحتياط: <strong>{{ $summary['reserve_count'] }}</strong>،
+            المقبولون دون تصنيف نهائي: <strong>{{ $summary['approved_unassigned_count'] }}</strong>،
             المستبعدون أو المرفوضون: <strong>{{ $summary['rejected_count'] }}</strong>.
             @if($summary['seats'] > 0 && $summary['seat_gap'] > 0)
-                ما زالت هناك <strong>{{ $summary['seat_gap'] }}</strong> مقاعد غير مغطاة.
+                ما زالت هناك <strong>{{ $summary['seat_gap'] }}</strong> مقاعد غير مغطاة بمرشحين أساسيين.
             @elseif($summary['seats'] > 0 && $summary['seat_surplus'] > 0)
                 يوجد عدد أساسي زائد بمقدار <strong>{{ $summary['seat_surplus'] }}</strong> عن المقاعد المحددة.
             @endif
@@ -96,7 +128,7 @@
                             @if($application->nomination?->selection_category)
                                 <span class="badge success">{{ \App\Models\Nomination::selectionLabels()[$application->nomination->selection_category] ?? $application->nomination->selection_category }}</span>
                             @else
-                                -
+                                <span class="badge warning">غير مصنف</span>
                             @endif
                         </td>
                         <td>{{ $application->nomination?->rank_order ?? '-' }}</td>
