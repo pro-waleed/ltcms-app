@@ -53,7 +53,7 @@
         .app-shell {
             min-height: 100vh;
             display: grid;
-            grid-template-rows: auto 1fr;
+            grid-template-rows: auto 1fr auto;
         }
 
         .site-header {
@@ -165,6 +165,46 @@
 
         .main-content {
             padding: 30px 0 46px;
+        }
+
+        .site-footer {
+            position: relative;
+            margin-top: 8px;
+            padding: 0 0 28px;
+        }
+
+        .footer-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            flex-wrap: wrap;
+            padding: 18px 22px;
+            border-radius: 22px;
+            border: 1px solid rgba(230, 216, 196, 0.95);
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.86), rgba(252, 247, 239, 0.96)),
+                linear-gradient(135deg, rgba(18,63,67,0.04), rgba(191,124,54,0.03));
+            box-shadow: var(--shadow-md);
+        }
+
+        .footer-title {
+            font-weight: 800;
+            color: var(--brand);
+            margin-bottom: 4px;
+        }
+
+        .footer-meta {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .footer-meta strong {
+            color: var(--ink);
+            font-weight: 800;
         }
 
         .page-stack {
@@ -673,6 +713,10 @@
                 width: 100%;
                 min-width: 100%;
             }
+
+            .footer-card {
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -770,6 +814,21 @@
             @yield('content')
         </div>
     </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-card">
+                <div>
+                    <div class="footer-title">نظام التدريب والتأهيل - الإدارة العامة للتخطيط والبحوث</div>
+                    <div class="muted">جميع الحقوق الفكرية محفوظة ضمن إطار العمل المؤسسي للنظام.</div>
+                </div>
+                <div class="footer-meta">
+                    <span><strong>تطوير:</strong> م. وليد العماري</span>
+                    <span><strong>إشراف:</strong> السفير طارق عبداللطيف ضيف الله</span>
+                </div>
+            </div>
+        </div>
+    </footer>
 </div>
 
 <script>
