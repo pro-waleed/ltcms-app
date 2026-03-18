@@ -199,12 +199,23 @@ class ReportController extends Controller
             ->orderByDesc('id')
             ->get();
 
+        $primaryCount = $applications->filter(fn ($application) => optional($application->nomination)->selection_category === 'primary')->count();
+        $reserveCount = $applications->filter(fn ($application) => optional($application->nomination)->selection_category === 'reserve')->count();
+        $rejectedCount = $applications->where('status', 'rejected')->count();
+        $seats = $opportunity->seats ?: 0;
+
         $summary = [
             'applications_total' => $applications->count(),
             'applications_pending' => $applications->whereIn('status', ['submitted', 'under_review'])->count(),
             'applications_approved' => $applications->where('status', 'approved')->count(),
             'applications_rejected' => $applications->where('status', 'rejected')->count(),
             'nominations_total' => $applications->filter(fn ($application) => $application->nomination)->count(),
+            'primary_count' => $primaryCount,
+            'reserve_count' => $reserveCount,
+            'rejected_count' => $rejectedCount,
+            'seats' => $seats,
+            'seat_gap' => max(0, $seats - $primaryCount),
+            'seat_surplus' => max(0, $primaryCount - $seats),
         ];
 
         return view('reports.opportunity', compact('opportunity', 'applications', 'summary'));

@@ -7,13 +7,10 @@
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
             <div>
                 <h3 style="margin: 0;">إدارة الفرص التدريبية</h3>
-                <p class="muted">إضافة وتحديث الفرص التدريبية.</p>
+                <p class="muted">إضافة وتحديث الفرص التدريبية ومتابعة قرارات الترشيح.</p>
             </div>
             <a class="btn" href="{{ route('opportunities.create') }}">إضافة فرصة جديدة</a>
         </div>
-        @if(session('status'))
-            <p class="success">{{ session('status') }}</p>
-        @endif
     </div>
 
     <div class="card">
@@ -24,6 +21,7 @@
                     <th>العنوان</th>
                     <th>النوع</th>
                     <th>النمط</th>
+                    <th>المقاعد</th>
                     <th>الحالة</th>
                     <th>تقرير</th>
                     <th></th>
@@ -36,6 +34,7 @@
                         <td>{{ $opportunity->title }}</td>
                         <td>{{ optional($opportunity->type)->name }}</td>
                         <td>{{ $opportunity->delivery_mode }}</td>
+                        <td>{{ $opportunity->seats ?: '-' }}</td>
                         <td><span class="badge">{{ $opportunity->status }}</span></td>
                         <td><a class="link" href="{{ route('reports.opportunity', $opportunity) }}">تقرير</a></td>
                         <td style="white-space: nowrap;">
@@ -48,12 +47,10 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="muted">لا توجد فرص مسجلة.</td></tr>
+                    <tr><td colspan="8" class="muted">لا توجد فرص مسجلة.</td></tr>
                 @endforelse
             </tbody>
         </table>
         <div style="margin-top: 12px;">{{ $opportunities->links() }}</div>
     </div>
 @endsection
-
-

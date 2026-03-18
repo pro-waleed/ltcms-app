@@ -31,6 +31,40 @@
         </div>
     </div>
 
+    <div class="grid grid-4" style="margin-bottom: 16px;">
+        <div class="card">
+            <h3>المقاعد المتاحة</h3>
+            <div class="kpi">{{ $summary['seats'] ?: '-' }}</div>
+        </div>
+        <div class="card">
+            <h3>المرشحون الأساسيون</h3>
+            <div class="kpi">{{ $summary['primary_count'] }}</div>
+        </div>
+        <div class="card">
+            <h3>المرشحون الاحتياط</h3>
+            <div class="kpi">{{ $summary['reserve_count'] }}</div>
+        </div>
+        <div class="card">
+            <h3>فجوة المقاعد</h3>
+            <div class="kpi">{{ $summary['seat_gap'] ?: 0 }}</div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 16px;">
+        <h3>خلاصة القرار</h3>
+        <p class="muted" style="margin: 0; line-height: 1.9;">
+            عدد المقاعد المعتمدة: <strong>{{ $summary['seats'] ?: 'غير محدد' }}</strong>،
+            المرشحون الأساسيون: <strong>{{ $summary['primary_count'] }}</strong>،
+            الاحتياط: <strong>{{ $summary['reserve_count'] }}</strong>،
+            المستبعدون أو المرفوضون: <strong>{{ $summary['rejected_count'] }}</strong>.
+            @if($summary['seats'] > 0 && $summary['seat_gap'] > 0)
+                ما زالت هناك <strong>{{ $summary['seat_gap'] }}</strong> مقاعد غير مغطاة.
+            @elseif($summary['seats'] > 0 && $summary['seat_surplus'] > 0)
+                يوجد عدد أساسي زائد بمقدار <strong>{{ $summary['seat_surplus'] }}</strong> عن المقاعد المحددة.
+            @endif
+        </p>
+    </div>
+
     <div class="card">
         <table class="table">
             <thead>
@@ -57,7 +91,13 @@
                                 <span class="muted">غير منشأ</span>
                             @endif
                         </td>
-                        <td>{{ $application->nomination ? (\App\Models\Nomination::selectionLabels()[$application->nomination->selection_category] ?? '-') : '-' }}</td>
+                        <td>
+                            @if($application->nomination?->selection_category)
+                                <span class="badge success">{{ \App\Models\Nomination::selectionLabels()[$application->nomination->selection_category] ?? $application->nomination->selection_category }}</span>
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td>{{ $application->nomination?->rank_order ?? '-' }}</td>
                         <td>{{ $application->decision_reason ?: '-' }}</td>
                     </tr>

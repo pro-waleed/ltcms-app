@@ -15,6 +15,7 @@
 <body>
     <h1>تقرير تفصيلي للفرصة</h1>
     <p>الفرصة: {{ $opportunity->title }} ({{ $opportunity->reference_no }})</p>
+    <p>عدد المقاعد: {{ $opportunity->seats ?: 'غير محدد' }}</p>
     <table>
         <thead>
             <tr>
