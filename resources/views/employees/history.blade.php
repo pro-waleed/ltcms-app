@@ -3,13 +3,15 @@
 @section('title', 'السجل التدريبي')
 
 @section('content')
+    @php($completionStatusLabels = \App\Models\TrainingHistory::completionStatusLabels())
+
     <div class="card" style="margin-bottom: 16px;">
         <h3>السجل التدريبي: {{ $employee->full_name }}</h3>
-        <p class="muted">عرض جميع الفرص التي تقدم لها الموظف وحالة التقديم.</p>
+        <p class="muted">عرض جميع الفرص التي تقدم لها الموظف وحالة التقديم والتدريب المكتمل.</p>
     </div>
 
     <div class="card" style="margin-bottom: 16px;">
-        <h3>طلبات التقديم</h3>
+        <h3>طلبات التقديم والترشيحات</h3>
         <table class="table">
             <thead>
                 <tr>
@@ -23,9 +25,9 @@
                 @forelse($employee->nominations as $nomination)
                     <tr>
                         <td>{{ optional($nomination->opportunity)->title }}</td>
-                        <td>{{ $nomination->status }}</td>
-                        <td>{{ $nomination->nomination_reason }}</td>
-                        <td>{{ $nomination->nomination_date }}</td>
+                        <td>{{ \App\Models\Nomination::statusLabels()[$nomination->status] ?? $nomination->status }}</td>
+                        <td>{{ $nomination->nomination_reason ?: '-' }}</td>
+                        <td>{{ optional($nomination->nomination_date)->format('Y-m-d') ?? '-' }}</td>
                     </tr>
                 @empty
                     <tr><td colspan="4" class="muted">لا توجد طلبات حتى الآن.</td></tr>
@@ -35,7 +37,7 @@
     </div>
 
     <div class="card">
-        <h3>السجل التدريبي (المكتمل)</h3>
+        <h3>السجل التدريبي المكتمل</h3>
         <table class="table">
             <thead>
                 <tr>
@@ -48,8 +50,8 @@
                 @forelse($employee->trainingHistory as $record)
                     <tr>
                         <td>{{ optional($record->opportunity)->title }}</td>
-                        <td>{{ $record->completion_status }}</td>
-                        <td>{{ $record->completion_date }}</td>
+                        <td>{{ $completionStatusLabels[$record->completion_status] ?? $record->completion_status }}</td>
+                        <td>{{ optional($record->completion_date)->format('Y-m-d') ?? '-' }}</td>
                     </tr>
                 @empty
                     <tr><td colspan="3" class="muted">لا يوجد سجل تدريبي مكتمل حتى الآن.</td></tr>

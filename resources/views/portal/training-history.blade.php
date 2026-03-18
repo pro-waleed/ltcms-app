@@ -3,6 +3,11 @@
 @section('title', 'السجل التدريبي')
 
 @section('content')
+    @php
+        $completionStatusLabels = \App\Models\TrainingHistory::completionStatusLabels();
+        $applicationStatuses = \App\Models\ApplicationRequest::statusLabels();
+    @endphp
+
     <div class="grid grid-2">
         <div class="card">
             <h2>السجل التدريبي</h2>
@@ -22,7 +27,7 @@
                     @foreach($employee->trainingHistory as $history)
                         <tr>
                             <td>{{ $history->opportunity?->title ?? 'فرصة محذوفة' }}</td>
-                            <td><span class="badge">{{ $history->completion_status ?: 'غير محددة' }}</span></td>
+                            <td><span class="badge">{{ $completionStatusLabels[$history->completion_status] ?? ($history->completion_status ?: 'غير محددة') }}</span></td>
                             <td>{{ optional($history->completion_date)->format('Y-m-d') ?? '-' }}</td>
                             <td>{{ $history->certificate_received ? 'تم الاستلام' : 'غير مستلمة' }}</td>
                         </tr>
@@ -49,7 +54,7 @@
                     @foreach($employee->applicationRequests as $application)
                         <tr>
                             <td>{{ $application->opportunity?->title ?? 'فرصة محذوفة' }}</td>
-                            <td><span class="badge info">{{ $application->status }}</span></td>
+                            <td><span class="badge info">{{ $applicationStatuses[$application->status] ?? $application->status }}</span></td>
                             <td>{{ optional($application->request_date)->format('Y-m-d') ?? '-' }}</td>
                         </tr>
                     @endforeach

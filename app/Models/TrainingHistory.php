@@ -29,6 +29,14 @@ class TrainingHistory extends Model
         'certificate_received' => 'boolean',
     ];
 
+    public static function completionStatusLabels(): array
+    {
+        return [
+            'completed' => 'مكتمل',
+            'not_completed' => 'غير مكتمل',
+        ];
+    }
+
     public function employee()
     {
         return $this->belongsTo(Employee::class);

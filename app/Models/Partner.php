@@ -27,6 +27,14 @@ class Partner extends Model
         'status',
     ];
 
+    public static function statusLabels(): array
+    {
+        return [
+            'active' => 'نشط',
+            'inactive' => 'غير نشط',
+        ];
+    }
+
     public function opportunities()
     {
         return $this->hasMany(Opportunity::class);

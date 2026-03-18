@@ -3,6 +3,8 @@
 @section('title', 'الشركاء')
 
 @section('content')
+    @php($partnerStatusLabels = \App\Models\Partner::statusLabels())
+
     <div class="card" style="margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
             <div>
@@ -42,7 +44,7 @@
                         <td>{{ $partner->geographic_level }}</td>
                         <td>{{ $partner->strategic_importance }}</td>
                         <td>{{ $partner->sector }}</td>
-                        <td><span class="badge">{{ $partner->status }}</span></td>
+                        <td><span class="badge">{{ $partnerStatusLabels[$partner->status] ?? $partner->status }}</span></td>
                         <td style="white-space: nowrap;">
                             <a class="link" href="{{ route('partners.edit', $partner) }}">تعديل</a>
                             <form action="{{ route('partners.destroy', $partner) }}" method="post" style="display: inline;">
