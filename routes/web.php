@@ -69,6 +69,8 @@ Route::middleware('auth')->group(function () {
         Route::post('nominations/by-opportunity', [NominationController::class, 'updateByOpportunity'])->name('nominations.by-opportunity.update');
         Route::get('/reports/opportunities/{opportunity}', [ReportController::class, 'opportunityReport'])->name('reports.opportunity');
         Route::get('/reports/opportunities/{opportunity}/print', [ReportController::class, 'opportunityPrint'])->name('reports.opportunity.print');
+        Route::get('/reports/opportunities/{opportunity}/decision', [ReportController::class, 'opportunityDecision'])->name('reports.opportunity.decision');
+        Route::get('/reports/opportunities/{opportunity}/decision/print', [ReportController::class, 'opportunityDecisionPrint'])->name('reports.opportunity.decision.print');
     });
 
     Route::middleware('role:system_admin,training_manager')->group(function () {

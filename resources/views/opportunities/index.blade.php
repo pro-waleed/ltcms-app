@@ -23,7 +23,7 @@
                     <th>النمط</th>
                     <th>المقاعد</th>
                     <th>الحالة</th>
-                    <th>تقرير</th>
+                    <th>التقارير</th>
                     <th></th>
                 </tr>
             </thead>
@@ -36,7 +36,10 @@
                         <td>{{ $opportunity->delivery_mode }}</td>
                         <td>{{ $opportunity->seats ?: '-' }}</td>
                         <td><span class="badge">{{ $opportunity->status }}</span></td>
-                        <td><a class="link" href="{{ route('reports.opportunity', $opportunity) }}">تقرير</a></td>
+                        <td style="white-space: nowrap;">
+                            <a class="link" href="{{ route('reports.opportunity', $opportunity) }}">تفصيلي</a>
+                            <a class="link" href="{{ route('reports.opportunity.decision', $opportunity) }}">محضر</a>
+                        </td>
                         <td style="white-space: nowrap;">
                             <a class="link" href="{{ route('opportunities.edit', $opportunity) }}">تعديل</a>
                             <form action="{{ route('opportunities.destroy', $opportunity) }}" method="post" style="display: inline;">

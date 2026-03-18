@@ -231,4 +231,65 @@ class ReportController extends Controller
 
         return view('reports.opportunity_print', compact('opportunity', 'applications', 'withReasons'));
     }
+
+    public function opportunityDecision(Opportunity $opportunity)
+    {
+        [$applications, $decision] = $this->buildOpportunityDecisionData($opportunity);
+
+        return view('reports.opportunity_decision', compact('opportunity', 'applications', 'decision'));
+    }
+
+    public function opportunityDecisionPrint(Opportunity $opportunity)
+    {
+        [$applications, $decision] = $this->buildOpportunityDecisionData($opportunity);
+
+        return view('reports.opportunity_decision_print', compact('opportunity', 'applications', 'decision'));
+    }
+
+    private function buildOpportunityDecisionData(Opportunity $opportunity): array
+    {
+        $applications = ApplicationRequest::with(['employee.department', 'nomination'])
+            ->where('opportunity_id', $opportunity->id)
+            ->orderByRaw('case when status = ? then 0 when status = ? then 1 else 2 end', ['approved', 'under_review'])
+            ->orderByDesc('id')
+            ->get();
+
+        $primary = $applications
+            ->filter(fn ($application) => optional($application->nomination)->selection_category === 'primary')
+            ->sortBy(fn ($application) => $application->nomination?->rank_order ?? PHP_INT_MAX)
+            ->values();
+
+        $reserve = $applications
+            ->filter(fn ($application) => optional($application->nomination)->selection_category === 'reserve')
+            ->sortBy(fn ($application) => $application->nomination?->rank_order ?? PHP_INT_MAX)
+            ->values();
+
+        $rejected = $applications
+            ->filter(fn ($application) => in_array($application->status, ['rejected', 'withdrawn'], true))
+            ->values();
+
+        $pending = $applications
+            ->filter(fn ($application) => in_array($application->status, ['submitted', 'under_review'], true))
+            ->values();
+
+        $seats = $opportunity->seats ?: 0;
+        $primaryCount = $primary->count();
+
+        return [
+            $applications,
+            [
+                'primary' => $primary,
+                'reserve' => $reserve,
+                'rejected' => $rejected,
+                'pending' => $pending,
+                'seats' => $seats,
+                'primary_count' => $primaryCount,
+                'reserve_count' => $reserve->count(),
+                'rejected_count' => $rejected->count(),
+                'pending_count' => $pending->count(),
+                'seat_gap' => max(0, $seats - $primaryCount),
+                'seat_surplus' => max(0, $primaryCount - $seats),
+            ],
+        ];
+    }
 }

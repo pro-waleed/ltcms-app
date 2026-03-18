@@ -9,6 +9,7 @@
         <div class="inline-actions" style="margin-top: 12px;">
             <a class="btn" href="{{ route('reports.opportunity.print', $opportunity) }}?reasons=1">طباعة مع المبررات</a>
             <a class="btn alt" href="{{ route('reports.opportunity.print', $opportunity) }}?reasons=0">طباعة بدون المبررات</a>
+            <a class="btn alt" href="{{ route('reports.opportunity.decision', $opportunity) }}">محضر القرار</a>
         </div>
     </div>
 
