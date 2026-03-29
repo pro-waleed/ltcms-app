@@ -8,7 +8,6 @@ use App\Models\Mission;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class EmployeeRegistrationController extends Controller
 {
@@ -65,7 +64,7 @@ class EmployeeRegistrationController extends Controller
                 'username' => $employeeNo,
                 'full_name' => $data['full_name'],
                 'email' => $data['email'],
-                'password' => Hash::make($data['password']),
+                'password' => $data['password'],
                 'is_active' => true,
                 'approval_status' => 'pending',
             ]);

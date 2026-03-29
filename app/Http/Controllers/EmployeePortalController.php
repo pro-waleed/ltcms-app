@@ -201,7 +201,7 @@ class EmployeePortalController extends Controller
         }
 
         $user->update([
-            'password' => Hash::make($data['password']),
+            'password' => $data['password'],
         ]);
 
         return redirect()->route('portal.password')->with('status', 'تم تغيير كلمة المرور بنجاح.');

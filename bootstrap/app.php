@@ -15,12 +15,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'employee.portal' => \App\Http\Middleware\EmployeePortalMiddleware::class,
         ]);
-
-        // Temporary production-safe workaround for Render login CSRF/session mismatch.
-        $middleware->validateCsrfTokens(except: [
-            'login',
-            'logout',
-        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

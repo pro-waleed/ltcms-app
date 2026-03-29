@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -51,7 +50,7 @@ class UserController extends Controller
             'username' => $data['username'],
             'full_name' => $data['full_name'],
             'email' => $data['email'] ?? null,
-            'password' => Hash::make($data['password']),
+            'password' => $data['password'],
             'is_active' => $request->boolean('is_active'),
             'approval_status' => 'approved',
             'approved_at' => now(),
@@ -90,7 +89,7 @@ class UserController extends Controller
         ];
 
         if (!empty($data['password'])) {
-            $payload['password'] = Hash::make($data['password']);
+            $payload['password'] = $data['password'];
         }
 
         $user->update($payload);

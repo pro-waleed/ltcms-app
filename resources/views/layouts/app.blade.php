@@ -360,6 +360,51 @@
             filter: brightness(1.03);
         }
 
+        .btn:active {
+            transform: translateY(0);
+            filter: brightness(0.99);
+        }
+
+        .btn[disabled],
+        .btn[aria-disabled="true"] {
+            opacity: 0.75;
+            cursor: not-allowed;
+            transform: none !important;
+            filter: none !important;
+        }
+
+        .btn.loading {
+            position: relative;
+            padding-inline-start: 44px;
+        }
+
+        .btn.loading::before {
+            content: "";
+            position: absolute;
+            inset-inline-start: 14px;
+            top: 50%;
+            width: 16px;
+            height: 16px;
+            margin-top: -8px;
+            border-radius: 999px;
+            border: 2px solid rgba(255, 255, 255, 0.55);
+            border-top-color: rgba(255, 255, 255, 1);
+            animation: spin 0.9s linear infinite;
+        }
+
+        .btn.alt.loading::before {
+            border-color: rgba(18, 63, 67, 0.18);
+            border-top-color: rgba(18, 63, 67, 0.75);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; animation: none !important; }
+        }
+
         .btn.alt {
             background: rgba(255,255,255,0.9);
             color: var(--brand);
@@ -833,6 +878,18 @@
 
 <script>
 (function () {
+    // Prevent double-submit + show subtle loading state.
+    document.querySelectorAll('form').forEach((form) => {
+        form.addEventListener('submit', () => {
+            const btn = form.querySelector('button[type="submit"]');
+            if (!btn) return;
+            if (btn.dataset.loadingApplied === '1') return;
+            btn.dataset.loadingApplied = '1';
+            btn.classList.add('loading');
+            btn.setAttribute('disabled', 'disabled');
+        });
+    });
+
     const input = document.getElementById('quick-search');
     const box = document.getElementById('search-suggest');
     if (!input || !box) return;

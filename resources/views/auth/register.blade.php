@@ -7,7 +7,7 @@
         <h2>تسجيل موظف جديد</h2>
         <p class="muted">سيتم إنشاء حسابك وربط اسم المستخدم تلقائيًا بالرقم الوظيفي التسلسلي.</p>
 
-        <form method="post" action="{{ route('register.perform') }}" class="form" style="margin-top: 20px;">
+        <form id="register-form" method="post" action="{{ route('register.perform') }}" class="form" style="margin-top: 20px;">
             @csrf
             <div class="grid grid-2">
                 <label>
@@ -20,12 +20,13 @@
                 </label>
                 <label>
                     كلمة المرور
-                    <input type="password" name="password" required>
-                    <small>8 أحرف على الأقل.</small>
+                    <input id="register-password" type="password" name="password" required minlength="8" autocomplete="new-password">
+                    <small class="helper-text">8 أحرف على الأقل.</small>
                 </label>
                 <label>
                     تأكيد كلمة المرور
-                    <input type="password" name="password_confirmation" required>
+                    <input id="register-password-confirmation" type="password" name="password_confirmation" required minlength="8" autocomplete="new-password">
+                    <small id="register-password-hint" class="helper-text" aria-live="polite"></small>
                 </label>
                 <label>
                     الإدارة
@@ -94,4 +95,58 @@
             </div>
         </form>
     </div>
+
+    <script>
+    (function () {
+        const form = document.getElementById('register-form');
+        const pass = document.getElementById('register-password');
+        const confirm = document.getElementById('register-password-confirmation');
+        const hint = document.getElementById('register-password-hint');
+        if (!form || !pass || !confirm || !hint) return;
+
+        const clearHint = () => {
+            hint.textContent = '';
+            hint.className = 'helper-text';
+            hint.style.color = '';
+        };
+
+        const syncMatch = () => {
+            const a = pass.value;
+            const b = confirm.value;
+
+            pass.setCustomValidity('');
+            confirm.setCustomValidity('');
+
+            if (!b.length) {
+                clearHint();
+                return;
+            }
+
+            if (a !== b) {
+                confirm.setCustomValidity('كلمة المرور وتأكيدها غير متطابقتين.');
+                hint.textContent = 'كلمة المرور وتأكيدها غير متطابقتين.';
+                hint.className = 'helper-text';
+                hint.style.color = 'var(--error-text, #8f1d1d)';
+                return;
+            }
+
+            confirm.setCustomValidity('');
+            hint.textContent = 'كلمة المرور متطابقة.';
+            hint.className = 'helper-text';
+            hint.style.color = 'var(--success-text, #17623f)';
+        };
+
+        pass.addEventListener('input', syncMatch);
+        confirm.addEventListener('input', syncMatch);
+
+        form.addEventListener('submit', (e) => {
+            syncMatch();
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                form.reportValidity();
+            }
+        }, true);
+    })();
+    </script>
 @endsection
